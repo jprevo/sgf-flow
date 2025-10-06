@@ -5,7 +5,6 @@ export interface SearchFilters {
   playerName: boolean;
   gameName: boolean;
   year: boolean;
-  winsOnly: boolean;
 }
 
 export const searchFilters = signal<SearchFilters>({
@@ -13,7 +12,6 @@ export const searchFilters = signal<SearchFilters>({
   playerName: true,
   gameName: true,
   year: true,
-  winsOnly: false,
 });
 
 export const updateSearchQuery = (query: string) => {

@@ -4,7 +4,7 @@ import { Checkbox } from "./Checkbox";
 import { SearchBox } from "./SearchBox";
 import { ThemeToggle } from "./ThemeToggle";
 import { SgfDirectoriesModal } from "./SgfDirectoriesModal";
-import { searchFilters, updateSearchQuery, toggleFilter } from "../stores/searchStore";
+import { searchFilters, toggleFilter, updateSearchQuery } from "../stores/searchStore";
 
 const isIndexModalOpen = signal(false);
 
@@ -50,11 +50,6 @@ export function Sidebar() {
               label="Year"
               checked={searchFilters.value.year}
               onChange={() => toggleFilter("year")}
-            />
-            <Checkbox
-              label="Wins only"
-              checked={searchFilters.value.winsOnly}
-              onChange={() => toggleFilter("winsOnly")}
             />
           </div>
         </div>

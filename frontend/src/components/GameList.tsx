@@ -1,9 +1,9 @@
 import { List, type RowComponentProps } from "react-window";
-import { generateMockGames } from "../utils/mockData";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
+import { useSignalEffect } from "@preact/signals-react/runtime";
 import type { Game } from "../types/game.ts";
-
-const mockGames = generateMockGames(1000);
+import { fetchGames } from "../services/games.service";
+import { searchFilters } from "../stores/searchStore";
 
 function GameRow({
   index,
@@ -55,21 +55,67 @@ function GameRow({
 }
 
 export function GameList() {
-  const itemData = useMemo(() => mockGames, []);
+  const [games, setGames] = useState<Game[]>([]);
+  const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(1000);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch games whenever search filters change
+  useSignalEffect(() => {
+    const loadGames = async () => {
+      setIsLoading(true);
+      try {
+        const filters = searchFilters.value;
+        const result = await fetchGames({
+          query: filters.query,
+          playerName: filters.playerName,
+          gameName: filters.gameName,
+          year: filters.year,
+          sortBy: "date",
+          sortOrder: "desc",
+        });
+
+        setGames(result.games);
+        setTotal(result.total);
+        setLimit(result.limit);
+      } catch (error) {
+        console.error("Failed to load games:", error);
+        setGames([]);
+        setTotal(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadGames();
+  });
+
+  const displayCount =
+    total > limit ? `${total.toLocaleString()} (displaying ${limit})` : total.toLocaleString();
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
       <div className="px-4 py-3 border-b border-[var(--color-border)]">
         <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
-          Games ({itemData.length})
+          Games: {isLoading ? "Loading..." : displayCount}
         </h2>
       </div>
-      <List
-        rowCount={itemData.length}
-        rowHeight={64}
-        rowProps={{ data: itemData }}
-        rowComponent={GameRow}
-      />
+      {isLoading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[var(--color-text-secondary)]">Loading games...</p>
+        </div>
+      ) : games.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[var(--color-text-secondary)]">No games found</p>
+        </div>
+      ) : (
+        <List
+          rowCount={games.length}
+          rowHeight={64}
+          rowProps={{ data: games }}
+          rowComponent={GameRow}
+        />
+      )}
     </div>
   );
 }
