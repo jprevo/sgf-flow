@@ -54,82 +54,94 @@ export async function getGames(
 
   const limit = 1000;
 
-  // Build WHERE clause
-  const whereClauses: string[] = [];
+  // Build FTS5 search query and regular WHERE clause
+  let gamesQuery: string;
+  let countQuery: string;
   const params: any[] = [];
 
   if (query && query.trim() !== "") {
-    const searchConditions: string[] = [];
+    // Build FTS5 search query based on search scope
+    const ftsConditions: string[] = [];
 
-    // Player name search (white or black)
     if (searchScope.playerName) {
-      searchConditions.push("white LIKE ?", "black LIKE ?");
-      params.push(`%${query}%`, `%${query}%`);
+      ftsConditions.push(`white:${query}*`, `black:${query}*`);
     }
 
-    // Game name search (round + event)
     if (searchScope.gameName) {
-      searchConditions.push("round LIKE ?", "event LIKE ?");
-      params.push(`%${query}%`, `%${query}%`);
+      ftsConditions.push(`event:${query}*`, `round:${query}*`);
     }
 
-    // Year search (extract year from playedAt date)
-    if (searchScope.year) {
-      const yearMatch = query.match(/^\d{4}$/);
-      if (yearMatch) {
-        const year = parseInt(yearMatch[0], 10);
-        searchConditions.push(
-          "strftime('%Y', playedAt) = ?",
-        );
-        params.push(year.toString());
-      }
-    }
+    // Year search - check if it's a 4-digit year
+    const yearMatch = query.match(/^\d{4}$/);
 
-    if (searchConditions.length > 0) {
-      whereClauses.push(`(${searchConditions.join(" OR ")})`);
+    if (yearMatch && searchScope.year) {
+      const year = yearMatch[0];
+      // Use regular WHERE clause for year filtering on playedAt
+      gamesQuery = `
+        SELECT g.id, g.white, g.black, g.event, g.playedAt, g.result, g.komi, g.round
+        FROM games g
+        WHERE strftime('%Y', g.playedAt) = ?
+        ORDER BY ${getSortColumn(sortBy)} ${sortOrder.toUpperCase()}
+        LIMIT ?
+      `;
+
+      countQuery = `
+        SELECT COUNT(*) as count
+        FROM games g
+        WHERE strftime('%Y', g.playedAt) = ?
+      `;
+
+      params.push(year, limit);
+    } else if (ftsConditions.length > 0) {
+      // Use FTS5 full-text search
+      const ftsQuery = ftsConditions.join(" OR ");
+
+      gamesQuery = `
+        SELECT g.id, g.white, g.black, g.event, g.playedAt, g.result, g.komi, g.round
+        FROM games g
+        INNER JOIN games_fts fts ON g.rowid = fts.rowid
+        WHERE games_fts MATCH ?
+        ORDER BY ${getSortColumn(sortBy)} ${sortOrder.toUpperCase()}
+        LIMIT ?
+      `;
+
+      countQuery = `
+        SELECT COUNT(*) as count
+        FROM games g
+        INNER JOIN games_fts fts ON g.rowid = fts.rowid
+        WHERE games_fts MATCH ?
+      `;
+
+      params.push(ftsQuery, limit);
+    } else {
+      // No valid search conditions, return all games
+      gamesQuery = `
+        SELECT id, white, black, event, playedAt, result, komi, round
+        FROM games g
+        ORDER BY ${getSortColumn(sortBy)} ${sortOrder.toUpperCase()}
+        LIMIT ?
+      `;
+
+      countQuery = `SELECT COUNT(*) as count FROM games`;
+      params.push(limit);
     }
+  } else {
+    // No query, return all games
+    gamesQuery = `
+      SELECT id, white, black, event, playedAt, result, komi, round
+      FROM games g
+      ORDER BY ${getSortColumn(sortBy)} ${sortOrder.toUpperCase()}
+      LIMIT ?
+    `;
+
+    countQuery = `SELECT COUNT(*) as count FROM games`;
+    params.push(limit);
   }
-
-  const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
-
-  // Build ORDER BY clause
-  let orderByColumn: string;
-  switch (sortBy) {
-    case "white":
-      orderByColumn = "white";
-      break;
-    case "black":
-      orderByColumn = "black";
-      break;
-    case "event":
-      orderByColumn = "event";
-      break;
-    case "date":
-    default:
-      orderByColumn = "playedAt";
-      break;
-  }
-
-  const orderByClause = `ORDER BY ${orderByColumn} ${sortOrder.toUpperCase()}`;
 
   // Execute queries
-  const gamesQuery = `
-    SELECT id, white, black, event, playedAt, result, komi, round
-    FROM games
-    ${whereClause}
-    ${orderByClause}
-    LIMIT ?
-  `;
-
-  const countQuery = `
-    SELECT COUNT(*) as count
-    FROM games
-    ${whereClause}
-  `;
-
   const [games, countResult] = await Promise.all([
-    dbAll<GameRow>(gamesQuery, [...params, limit]),
-    dbGet<{ count: number }>(countQuery, params),
+    dbAll<GameRow>(gamesQuery, params),
+    dbGet<{ count: number }>(countQuery, params.slice(0, -1)), // Remove limit from count query
   ]);
 
   // Transform to match frontend interface
@@ -149,4 +161,21 @@ export async function getGames(
     total: countResult?.count || 0,
     limit,
   };
+}
+
+/**
+ * Helper function to get sort column name from sortBy value
+ */
+function getSortColumn(sortBy: string): string {
+  switch (sortBy) {
+    case "white":
+      return "g.white";
+    case "black":
+      return "g.black";
+    case "event":
+      return "g.event";
+    case "date":
+    default:
+      return "g.playedAt";
+  }
 }

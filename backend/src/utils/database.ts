@@ -2,7 +2,8 @@ import sqlite3 from "sqlite3";
 import path from "path";
 
 // Database file path - store in user's home directory or current working directory
-const DB_PATH = process.env.DATABASE_PATH || path.join(process.cwd(), "sgf-flow.db");
+const DB_PATH =
+  process.env.DATABASE_PATH || path.join(process.cwd(), "sgf-flow.db");
 
 /**
  * SQLite database instance
@@ -24,6 +25,7 @@ db.run("PRAGMA foreign_keys = ON");
 export function initializeDatabase(): Promise<void> {
   return new Promise((resolve, reject) => {
     db.serialize(() => {
+      // Create main games table
       db.run(
         `
         CREATE TABLE IF NOT EXISTS games (
@@ -45,10 +47,82 @@ export function initializeDatabase(): Promise<void> {
         (err) => {
           if (err) {
             reject(err);
-          } else {
-            console.log("Database tables initialized");
-            resolve();
+            return;
           }
+
+          // Create FTS5 virtual table for full-text search
+          db.run(
+            `
+            CREATE VIRTUAL TABLE IF NOT EXISTS games_fts USING fts5(
+              id UNINDEXED,
+              white,
+              black,
+              event,
+              round,
+              playedAt UNINDEXED,
+              content='games',
+              content_rowid='rowid'
+            )
+          `,
+            (err) => {
+              if (err) {
+                reject(err);
+                return;
+              }
+
+              // Create triggers to keep FTS5 in sync with games table
+              db.run(
+                `
+                CREATE TRIGGER IF NOT EXISTS games_ai AFTER INSERT ON games BEGIN
+                  INSERT INTO games_fts(rowid, id, white, black, event, round, playedAt)
+                  VALUES (new.rowid, new.id, new.white, new.black, new.event, new.round, new.playedAt);
+                END
+              `,
+                (err) => {
+                  if (err) {
+                    reject(err);
+                    return;
+                  }
+
+                  db.run(
+                    `
+                    CREATE TRIGGER IF NOT EXISTS games_ad AFTER DELETE ON games BEGIN
+                      INSERT INTO games_fts(games_fts, rowid, id, white, black, event, round, playedAt)
+                      VALUES('delete', old.rowid, old.id, old.white, old.black, old.event, old.round, old.playedAt);
+                    END
+                  `,
+                    (err) => {
+                      if (err) {
+                        reject(err);
+                        return;
+                      }
+
+                      db.run(
+                        `
+                        CREATE TRIGGER IF NOT EXISTS games_au AFTER UPDATE ON games BEGIN
+                          INSERT INTO games_fts(games_fts, rowid, id, white, black, event, round, playedAt)
+                          VALUES('delete', old.rowid, old.id, old.white, old.black, old.event, old.round, old.playedAt);
+                          INSERT INTO games_fts(rowid, id, white, black, event, round, playedAt)
+                          VALUES (new.rowid, new.id, new.white, new.black, new.event, new.round, new.playedAt);
+                        END
+                      `,
+                        (err) => {
+                          if (err) {
+                            reject(err);
+                          } else {
+                            console.log(
+                              "Database tables and FTS5 index initialized",
+                            );
+                            resolve();
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
         },
       );
     });
@@ -70,7 +144,10 @@ export function dbAll<T = any>(sql: string, params: any[] = []): Promise<T[]> {
 /**
  * Helper function to run SQL queries that return a single result
  */
-export function dbGet<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+export function dbGet<T = any>(
+  sql: string,
+  params: any[] = [],
+): Promise<T | undefined> {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, row) => {
       if (err) reject(err);
@@ -82,7 +159,10 @@ export function dbGet<T = any>(sql: string, params: any[] = []): Promise<T | und
 /**
  * Helper function to run SQL queries that don't return results
  */
-export function dbRun(sql: string, params: any[] = []): Promise<sqlite3.RunResult> {
+export function dbRun(
+  sql: string,
+  params: any[] = [],
+): Promise<sqlite3.RunResult> {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function (err) {
       if (err) reject(err);

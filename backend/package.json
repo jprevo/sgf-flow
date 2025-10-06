@@ -2,7 +2,7 @@
   "name": "backend",
   "private": true,
   "version": "1.0.0",
-  "description": "Backend server for tenuki-database",
+  "description": "Backend server for SGF Flow",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "scripts": {
