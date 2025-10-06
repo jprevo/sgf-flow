@@ -1,16 +1,18 @@
 import express, { Request, Response } from "express";
 import { loadConfig } from "./utils/config";
-import { initializeDatabase, closeDatabase } from "./utils/database";
+import { closeDatabase, initializeDatabase } from "./utils/database";
 import sgfDirectoryController from "./controllers/sgf-directory.controller";
 import sgfIndexerController from "./controllers/sgf-indexer.controller";
 import gamesController from "./controllers/games.controller";
 import packageJson from "./../package.json";
+import path from "path";
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // Load configuration
 const config = loadConfig();

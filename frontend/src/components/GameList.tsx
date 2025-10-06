@@ -1,5 +1,5 @@
 import { List, type RowComponentProps } from "react-window";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSignalEffect } from "@preact/signals-react/runtime";
 import type { Game } from "../types/game.ts";
 import { fetchGames } from "../services/games.service";

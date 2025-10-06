@@ -17,9 +17,7 @@ export type ProgressCallback = (progress: IndexProgress) => void;
 /**
  * Runs the SGF indexer with Server-Sent Events for progress updates
  */
-export async function runIndexer(
-  onProgress: ProgressCallback,
-): Promise<void> {
+export async function runIndexer(onProgress: ProgressCallback): Promise<void> {
   const baseURL = httpClient.defaults.baseURL || "";
   const url = `${baseURL}/sgf-indexer/index`;
 
@@ -54,7 +52,7 @@ export async function runIndexer(
       }
     };
 
-    eventSource.onerror = (error) => {
+    eventSource.onerror = (_) => {
       eventSource.close();
       reject(new Error("Connection to indexer failed"));
     };

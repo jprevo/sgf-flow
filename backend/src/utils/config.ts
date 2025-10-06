@@ -24,8 +24,11 @@ export interface Config {
  */
 function getConfigFilePath(env?: string): string {
   const environment = env || process.env.NODE_ENV || "development";
-  const envConfigPath = path.join(process.cwd(), `config.${environment}.yaml`);
-  const defaultConfigPath = path.join(process.cwd(), "config.yaml");
+  const envConfigPath = path.join(
+    __dirname,
+    `../../config.${environment}.yaml`,
+  );
+  const defaultConfigPath = path.join(__dirname, "../../config.yaml");
 
   if (fs.existsSync(envConfigPath)) {
     return envConfigPath;
