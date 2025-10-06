@@ -1,6 +1,6 @@
-import * as yaml from 'js-yaml';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as yaml from "js-yaml";
+import * as fs from "fs";
+import * as path from "path";
 
 export interface Config {
   server: {
@@ -23,9 +23,9 @@ export interface Config {
  * @returns Path to the configuration file
  */
 function getConfigFilePath(env?: string): string {
-  const environment = env || process.env.NODE_ENV || 'development';
+  const environment = env || process.env.NODE_ENV || "development";
   const envConfigPath = path.join(process.cwd(), `config.${environment}.yaml`);
-  const defaultConfigPath = path.join(process.cwd(), 'config.yaml');
+  const defaultConfigPath = path.join(process.cwd(), "config.yaml");
 
   if (fs.existsSync(envConfigPath)) {
     return envConfigPath;
@@ -33,13 +33,13 @@ function getConfigFilePath(env?: string): string {
 
   if (fs.existsSync(defaultConfigPath)) {
     console.warn(
-      `Environment-specific config not found (config.${environment}.yaml), using default config.yaml`
+      `Environment-specific config not found (config.${environment}.yaml), using default config.yaml`,
     );
     return defaultConfigPath;
   }
 
   throw new Error(
-    `No configuration file found. Expected config.${environment}.yaml or config.yaml`
+    `No configuration file found. Expected config.${environment}.yaml or config.yaml`,
   );
 }
 
@@ -73,7 +73,7 @@ export function loadConfig(configPath?: string): Config {
   const filePath = configPath || getConfigFilePath();
 
   try {
-    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const fileContents = fs.readFileSync(filePath, "utf8");
     const config = yaml.load(fileContents) as Config;
     return mergeEnvironmentVariables(config);
   } catch (error) {
@@ -95,7 +95,7 @@ export function saveConfig(config: Config, configPath?: string): void {
       indent: 2,
       lineWidth: -1,
     });
-    fs.writeFileSync(filePath, yamlString, 'utf8');
+    fs.writeFileSync(filePath, yamlString, "utf8");
   } catch (error) {
     console.error(`Failed to save config to ${filePath}:`, error);
     throw error;

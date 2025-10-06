@@ -1,20 +1,20 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { loadConfig, saveConfig, Config } from '../utils/config';
+import * as fs from "fs";
+import * as path from "path";
+import { loadConfig, saveConfig, Config } from "../utils/config";
 
-describe('Config Utility', () => {
-  const testConfigPath = path.join(__dirname, 'test-config.yaml');
+describe("Config Utility", () => {
+  const testConfigPath = path.join(__dirname, "test-config.yaml");
   const testConfig: Config = {
     server: {
       port: 4000,
-      environment: 'test',
+      environment: "test",
     },
     database: {
-      url: 'file:./test.db',
+      url: "file:./test.db",
     },
     logging: {
-      level: 'debug',
-      format: 'text',
+      level: "debug",
+      format: "text",
     },
   };
 
@@ -25,45 +25,45 @@ describe('Config Utility', () => {
     }
   });
 
-  describe('saveConfig', () => {
-    it('should save config to YAML file', () => {
+  describe("saveConfig", () => {
+    it("should save config to YAML file", () => {
       saveConfig(testConfig, testConfigPath);
       expect(fs.existsSync(testConfigPath)).toBe(true);
     });
 
-    it('should create valid YAML', () => {
+    it("should create valid YAML", () => {
       saveConfig(testConfig, testConfigPath);
-      const fileContents = fs.readFileSync(testConfigPath, 'utf8');
-      expect(fileContents).toContain('server:');
-      expect(fileContents).toContain('port: 4000');
+      const fileContents = fs.readFileSync(testConfigPath, "utf8");
+      expect(fileContents).toContain("server:");
+      expect(fileContents).toContain("port: 4000");
     });
   });
 
-  describe('loadConfig', () => {
+  describe("loadConfig", () => {
     beforeEach(() => {
       saveConfig(testConfig, testConfigPath);
     });
 
-    it('should load config from YAML file', () => {
+    it("should load config from YAML file", () => {
       const config = loadConfig(testConfigPath);
       expect(config).toEqual(testConfig);
     });
 
-    it('should parse server configuration', () => {
+    it("should parse server configuration", () => {
       const config = loadConfig(testConfigPath);
       expect(config.server.port).toBe(4000);
-      expect(config.server.environment).toBe('test');
+      expect(config.server.environment).toBe("test");
     });
 
-    it('should parse database configuration', () => {
+    it("should parse database configuration", () => {
       const config = loadConfig(testConfigPath);
-      expect(config.database.url).toBe('file:./test.db');
+      expect(config.database.url).toBe("file:./test.db");
     });
 
-    it('should parse logging configuration', () => {
+    it("should parse logging configuration", () => {
       const config = loadConfig(testConfigPath);
-      expect(config.logging.level).toBe('debug');
-      expect(config.logging.format).toBe('text');
+      expect(config.logging.level).toBe("debug");
+      expect(config.logging.format).toBe("text");
     });
   });
 });

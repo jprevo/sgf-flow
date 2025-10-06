@@ -1,7 +1,7 @@
-import express, { Request, Response } from 'express';
-import { loadConfig } from './utils/config';
-import { prisma } from './utils/database';
-import sgfDirectoryController from './controllers/sgf-directory.controller';
+import express, { Request, Response } from "express";
+import { loadConfig } from "./utils/config";
+import { prisma } from "./utils/database";
+import sgfDirectoryController from "./controllers/sgf-directory.controller";
 import packageJson from "./../package.json";
 
 const app = express();
@@ -14,15 +14,15 @@ app.use(express.urlencoded({ extended: true }));
 const config = loadConfig();
 
 // Routes
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Tenuki Database API', version: packageJson.version });
+app.get("/", (req: Request, res: Response) => {
+  res.json({ message: "Tenuki Database API", version: packageJson.version });
 });
 
-app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get("/health", (req: Request, res: Response) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-app.use('/api/sgf-directories', sgfDirectoryController);
+app.use("/api/sgf-directories", sgfDirectoryController);
 
 // Start server
 const PORT = config.server.port || 3000;
@@ -33,14 +33,14 @@ app.listen(PORT, () => {
 });
 
 // Graceful shutdown
-process.on('SIGINT', async () => {
-  console.log('Shutting down gracefully...');
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
   await prisma.$disconnect();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
-  console.log('Shutting down gracefully...');
+process.on("SIGTERM", async () => {
+  console.log("Shutting down gracefully...");
   await prisma.$disconnect();
   process.exit(0);
 });

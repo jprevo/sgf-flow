@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import { loadConfig, saveConfig, Config } from '../utils/config';
+import * as path from "path";
+import * as fs from "fs";
+import { loadConfig, saveConfig, Config } from "../utils/config";
 
 /**
  * Normalizes a file path to use consistent format across platforms
@@ -14,7 +14,7 @@ export function normalizePath(dirPath: string): string {
     : path.resolve(process.cwd(), dirPath);
 
   // Normalize to forward slashes for consistency across platforms
-  return absolutePath.split(path.sep).join('/');
+  return absolutePath.split(path.sep).join("/");
 }
 
 /**
@@ -47,9 +47,9 @@ export function isSubdirectory(parent: string, child: string): boolean {
   }
 
   // Ensure parent path ends with separator for accurate comparison
-  const parentWithSeparator = normalizedParent.endsWith('/')
+  const parentWithSeparator = normalizedParent.endsWith("/")
     ? normalizedParent
-    : normalizedParent + '/';
+    : normalizedParent + "/";
 
   return normalizedChild.startsWith(parentWithSeparator);
 }
@@ -73,7 +73,7 @@ export function addSgfDirectory(dirPath: string, configPath?: string): void {
   const currentDirectories = config.sgfDirectories || [];
 
   // Check if directory is already in the list
-  if (currentDirectories.some(dir => normalizePath(dir) === normalizedPath)) {
+  if (currentDirectories.some((dir) => normalizePath(dir) === normalizedPath)) {
     throw new Error(`Directory already exists in configuration: ${dirPath}`);
   }
 
@@ -81,19 +81,19 @@ export function addSgfDirectory(dirPath: string, configPath?: string): void {
   for (const existingDir of currentDirectories) {
     if (isSubdirectory(existingDir, normalizedPath)) {
       throw new Error(
-        `Cannot add directory "${dirPath}" because its parent "${existingDir}" is already included`
+        `Cannot add directory "${dirPath}" because its parent "${existingDir}" is already included`,
       );
     }
   }
 
   // Check if new directory is a parent of any existing directory
-  const subdirectories = currentDirectories.filter(existingDir =>
-    isSubdirectory(normalizedPath, existingDir)
+  const subdirectories = currentDirectories.filter((existingDir) =>
+    isSubdirectory(normalizedPath, existingDir),
   );
 
   if (subdirectories.length > 0) {
     throw new Error(
-      `Cannot add directory "${dirPath}" because it contains existing subdirectories: ${subdirectories.join(', ')}`
+      `Cannot add directory "${dirPath}" because it contains existing subdirectories: ${subdirectories.join(", ")}`,
     );
   }
 
@@ -117,7 +117,7 @@ export function removeSgfDirectory(dirPath: string, configPath?: string): void {
 
   // Find the directory in the list
   const indexToRemove = currentDirectories.findIndex(
-    dir => normalizePath(dir) === normalizedPath
+    (dir) => normalizePath(dir) === normalizedPath,
   );
 
   if (indexToRemove === -1) {
@@ -125,7 +125,9 @@ export function removeSgfDirectory(dirPath: string, configPath?: string): void {
   }
 
   // Remove the directory
-  config.sgfDirectories = currentDirectories.filter((_, index) => index !== indexToRemove);
+  config.sgfDirectories = currentDirectories.filter(
+    (_, index) => index !== indexToRemove,
+  );
   saveConfig(config, configPath);
 }
 

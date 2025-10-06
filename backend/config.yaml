@@ -7,4 +7,4 @@ logging:
   level: info
   format: json
 sgfDirectories:
-  -
+  - ""

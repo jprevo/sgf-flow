@@ -1,5 +1,6 @@
 {
   "name": "backend",
+  "private": true,
   "version": "1.0.0",
   "description": "Backend server for tenuki-database",
   "main": "dist/index.js",
@@ -16,9 +17,9 @@
   "author": "Jonathan Prevost",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^6.16.3",
     "express": "^5.1.0",
-    "js-yaml": "^4.1.0",
-    "@prisma/client": "^6.16.3"
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
@@ -28,6 +29,7 @@
     "@types/supertest": "^6.0.3",
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
+    "prettier": "3.6.2",
     "prisma": "^6.16.3",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.4",

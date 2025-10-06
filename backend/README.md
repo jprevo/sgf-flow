@@ -5,16 +5,19 @@ Express server with TypeScript, SQLite (Prisma ORM), and hot reload.
 ## Setup
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Generate Prisma client:
+
 ```bash
 npm run prisma:generate
 ```
 
 3. Run database migrations:
+
 ```bash
 npm run prisma:migrate
 ```
@@ -22,6 +25,7 @@ npm run prisma:migrate
 ## Development
 
 Start the development server with hot reload:
+
 ```bash
 npm run dev
 ```
@@ -29,11 +33,13 @@ npm run dev
 ## Testing
 
 Run tests:
+
 ```bash
 npm test
 ```
 
 Run tests in watch mode:
+
 ```bash
 npm run test:watch
 ```
@@ -41,11 +47,13 @@ npm run test:watch
 ## Build
 
 Build for production:
+
 ```bash
 npm run build
 ```
 
 Run production build:
+
 ```bash
 npm start
 ```
