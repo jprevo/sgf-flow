@@ -11,8 +11,7 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-[var(--color-accent-green)] hover:bg-[var(--color-accent-green-hover)] text-white",
-  secondary:
-    "bg-[var(--color-accent-brown)] hover:opacity-90 text-white",
+  secondary: "bg-[var(--color-accent-brown)] hover:opacity-90 text-white",
   ghost:
     "bg-transparent hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)]",
 };

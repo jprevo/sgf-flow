@@ -91,7 +91,9 @@ export function GameList() {
   });
 
   const displayCount =
-    total > limit ? `${total.toLocaleString()} (displaying ${limit})` : total.toLocaleString();
+    total > limit
+      ? `${total.toLocaleString()} (displaying ${limit})`
+      : total.toLocaleString();
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">

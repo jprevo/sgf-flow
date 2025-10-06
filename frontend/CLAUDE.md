@@ -12,12 +12,14 @@ SGF Flow is a monorepo containing a React frontend for managing and displaying G
 ## Frontend Development Commands
 
 ### Development
+
 - `npm run dev` - Start Vite dev server with hot reload
 - `npm run build` - Type-check with `tsc -b` then build for production
 - `npm run preview` - Preview production build locally
 - `npm run lint` - Run ESLint on all files
 
 ### Key Dependencies
+
 - **React 19.1.1** with React 19 features
 - **@preact/signals** - Fine-grained reactivity with Preact Signals (using react-transform plugin)
 - **Tailwind CSS v4** - Using the new Vite plugin (`@tailwindcss/vite`)
@@ -28,6 +30,7 @@ SGF Flow is a monorepo containing a React frontend for managing and displaying G
 The backend lives in `../backend/` and provides the API for SGF game data.
 
 ### Development
+
 - `npm run dev` - Start development server with hot reload (nodemon + ts-node)
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm start` - Run production build
@@ -35,6 +38,7 @@ The backend lives in `../backend/` and provides the API for SGF game data.
 - `npm run test:watch` - Run tests in watch mode
 
 ### Database (Prisma)
+
 - `npm run prisma:generate` - Generate Prisma client (run after schema changes)
 - `npm run prisma:migrate` - Run database migrations
 - `npm run prisma:studio` - Open Prisma Studio GUI
@@ -63,6 +67,7 @@ The backend lives in `../backend/` and provides the API for SGF game data.
 ### Database Schema
 
 The `Game` model stores SGF game metadata:
+
 - String ID, timestamps (playedAt, createdAt)
 - Game details: round, event, komi, result
 - Players: white, black

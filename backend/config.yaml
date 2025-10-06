@@ -6,4 +6,4 @@ database:
 logging:
   level: info
   format: json
-sgfDirectories: [ ]
+sgfDirectories: []

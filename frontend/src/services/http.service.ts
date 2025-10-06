@@ -21,7 +21,7 @@ httpClient.interceptors.response.use(
     showErrorToast(errorMessage);
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export { httpClient };

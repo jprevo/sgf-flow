@@ -18,7 +18,10 @@ interface SgfDirectoriesModalProps {
   onClose: () => void;
 }
 
-export function SgfDirectoriesModal({ isOpen, onClose }: SgfDirectoriesModalProps) {
+export function SgfDirectoriesModal({
+  isOpen,
+  onClose,
+}: SgfDirectoriesModalProps) {
   const [, setForceUpdate] = useState(0);
 
   useEffect(() => {
@@ -69,7 +72,12 @@ export function SgfDirectoriesModal({ isOpen, onClose }: SgfDirectoriesModalProp
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Index SGF Files" className="max-w-2xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Index SGF Files"
+      className="max-w-2xl"
+    >
       <div className="space-y-6">
         {/* Directories List */}
         <div className="space-y-3">
@@ -120,7 +128,7 @@ export function SgfDirectoriesModal({ isOpen, onClose }: SgfDirectoriesModalProp
               value={newDirectory.value}
               onChange={(e) => {
                 newDirectory.value = e.target.value;
-                setForceUpdate(prev => prev + 1);
+                setForceUpdate((prev) => prev + 1);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {

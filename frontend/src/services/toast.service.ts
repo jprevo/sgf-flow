@@ -12,7 +12,11 @@ export const toasts = signal<Toast[]>([]);
 
 let toastIdCounter = 0;
 
-export function showToast(message: string, type: ToastType = "notice", duration = 5000) {
+export function showToast(
+  message: string,
+  type: ToastType = "notice",
+  duration = 5000,
+) {
   const id = `toast-${++toastIdCounter}`;
   const toast: Toast = { id, message, type };
 
@@ -26,7 +30,7 @@ export function showToast(message: string, type: ToastType = "notice", duration 
 }
 
 export function removeToast(id: string) {
-  toasts.value = toasts.value.filter(t => t.id !== id);
+  toasts.value = toasts.value.filter((t) => t.id !== id);
 }
 
 export function showSuccessToast(message: string, duration?: number) {

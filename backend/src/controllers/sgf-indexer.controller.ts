@@ -15,7 +15,7 @@ router.post("/index", async (req: Request, res: Response) => {
   res.setHeader("X-Accel-Buffering", "no"); // Disable nginx buffering
 
   // Send initial connection message
-  res.write("data: {\"status\":\"connected\"}\n\n");
+  res.write('data: {"status":"connected"}\n\n');
 
   try {
     // Start indexing with progress callback

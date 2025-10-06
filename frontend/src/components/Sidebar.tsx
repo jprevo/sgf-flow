@@ -4,7 +4,11 @@ import { Checkbox } from "./Checkbox";
 import { SearchBox } from "./SearchBox";
 import { ThemeToggle } from "./ThemeToggle";
 import { SgfDirectoriesModal } from "./SgfDirectoriesModal";
-import { searchFilters, toggleFilter, updateSearchQuery } from "../stores/searchStore";
+import {
+  searchFilters,
+  toggleFilter,
+  updateSearchQuery,
+} from "../stores/searchStore";
 
 const isIndexModalOpen = signal(false);
 

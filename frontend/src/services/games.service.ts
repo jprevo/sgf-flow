@@ -20,7 +20,7 @@ export interface GameQueryParams {
  * Fetch games from the API with optional filters and sorting
  */
 export async function fetchGames(
-  params: GameQueryParams = {}
+  params: GameQueryParams = {},
 ): Promise<GameListResponse> {
   const queryParams = new URLSearchParams();
 
@@ -49,7 +49,7 @@ export async function fetchGames(
   }
 
   const response = await httpClient.get<GameListResponse>(
-    `/games?${queryParams.toString()}`
+    `/games?${queryParams.toString()}`,
   );
 
   return response.data;
