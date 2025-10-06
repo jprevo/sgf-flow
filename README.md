@@ -5,7 +5,7 @@ A monorepo for managing and displaying Go/Baduk game records (SGF files).
 ## Project Structure
 
 - **frontend/** - React + Vite + TypeScript frontend application
-- **backend/** - Express + TypeScript + Prisma backend server
+- **backend/** - Express + TypeScript backend server with SQLite
 
 ## Frontend
 
@@ -42,24 +42,32 @@ RESTful API server for SGF game data with SQLite database.
 ### Features
 
 - Game metadata storage (players, events, dates, results)
-- SGF directory indexing
-- Prisma ORM for database management
+- Real-time SGF directory indexing with Server-Sent Events
+- Fast SGF parser for game metadata extraction
+- Standalone binary generation for easy distribution
 
 ### Tech Stack
 
 - Express.js
 - TypeScript
-- Prisma ORM
-- SQLite database
+- SQLite (native sqlite3)
 - Jest for testing
+- YAML-based configuration
 
 ### Getting Started
 
 ```bash
 cd backend
 npm install
-npm run prisma:generate
 npm run dev
+```
+
+### Building Binaries
+
+Generate standalone executables for multiple platforms:
+
+```bash
+npm run package     # Create binaries in bin/ folder
 ```
 
 ## Development

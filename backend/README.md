@@ -1,6 +1,6 @@
-# Tenuki Database Backend
+# SGF Flow Backend
 
-Express server with TypeScript, SQLite (Prisma ORM), and hot reload.
+Express server with TypeScript, SQLite, and hot reload.
 
 ## Setup
 
@@ -10,17 +10,13 @@ Express server with TypeScript, SQLite (Prisma ORM), and hot reload.
 npm install
 ```
 
-2. Generate Prisma client:
+2. Start the development server:
 
 ```bash
-npm run prisma:generate
+npm run dev
 ```
 
-3. Run database migrations:
-
-```bash
-npm run prisma:migrate
-```
+The database will be automatically initialized on first run.
 
 ## Development
 
@@ -58,31 +54,48 @@ Run production build:
 npm start
 ```
 
+## Packaging
+
+Generate standalone binaries for Linux, macOS, and Windows:
+
+```bash
+npm run package     # Creates executables in bin/ folder
+```
+
+Binaries include the frontend static files and can run without Node.js installed.
+
 ## Configuration
 
-Configuration is loaded from `config.yaml` and can be overridden with environment variables in `.env`:
+Configuration is loaded from `config.yaml` and `config.development.yaml`:
 
 - `PORT` - Server port (default: 3000)
 - `NODE_ENV` - Environment (development/production)
-- `DATABASE_URL` - SQLite database file path
+- `DATABASE_PATH` - SQLite database file path (default: ./sgf-flow.db)
 
 ## Project Structure
 
 ```
 backend/
-├── prisma/
-│   └── schema.prisma       # Database schema
 ├── src/
-│   ├── __tests__/          # Test files
+│   ├── __tests__/                      # Test files
+│   ├── controllers/
+│   │   ├── games.controller.ts         # Game data endpoints
+│   │   ├── sgf-directory.controller.ts # Directory management
+│   │   └── sgf-indexer.controller.ts   # Real-time indexing
+│   ├── services/
+│   │   ├── games.service.ts            # Game data logic
+│   │   ├── sgf-parser.service.ts       # SGF file parser
+│   │   ├── sgf-directory.service.ts    # Directory management
+│   │   └── sgf-indexer.service.ts      # Fast indexing logic
 │   ├── utils/
-│   │   ├── config.ts       # YAML config loader
-│   │   └── database.ts     # Prisma client
-│   └── index.ts            # Express server
-├── config.yaml             # Application configuration
-├── .env                    # Environment variables
-├── tsconfig.json           # TypeScript config
-├── nodemon.json            # Hot reload config
-└── jest.config.js          # Test config
+│   │   ├── config.ts                   # YAML config loader
+│   │   └── database.ts                 # SQLite helpers
+│   └── index.ts                        # Express server
+├── config.yaml                         # Production configuration
+├── config.development.yaml             # Development configuration
+├── tsconfig.json                       # TypeScript config
+├── nodemon.json                        # Hot reload config
+└── package.json                        # Dependencies and scripts
 ```
 
 ## Available Scripts
@@ -92,6 +105,22 @@ backend/
 - `npm start` - Run production build
 - `npm test` - Run tests
 - `npm run test:watch` - Run tests in watch mode
-- `npm run prisma:generate` - Generate Prisma client
-- `npm run prisma:migrate` - Run database migrations
-- `npm run prisma:studio` - Open Prisma Studio
+- `npm run build-frontend` - Build frontend (from backend directory)
+- `npm run package` - Generate standalone binaries for distribution
+
+## API Endpoints
+
+### Games
+
+- `GET /api/games` - Get all games with optional search filters
+- `GET /api/games/:id` - Get specific game by ID
+
+### Directories
+
+- `GET /api/sgf-directories` - Get configured SGF directories
+- `POST /api/sgf-directories` - Add new SGF directory
+- `DELETE /api/sgf-directories` - Remove SGF directory
+
+### Indexing
+
+- `GET /api/indexer/stream` - Server-Sent Events stream for real-time indexing progress
