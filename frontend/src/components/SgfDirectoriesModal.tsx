@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { signal } from "@preact/signals-react";
+import { useTranslation } from "react-i18next";
 import { Modal } from "./Modal";
 import { Button } from "./Button";
 import { SearchBox } from "./SearchBox";
@@ -29,6 +30,7 @@ export function SgfDirectoriesModal({
   isOpen,
   onClose,
 }: SgfDirectoriesModalProps) {
+  const { t } = useTranslation();
   const [, setForceUpdate] = useState(0);
 
   useEffect(() => {
@@ -89,11 +91,7 @@ export function SgfDirectoriesModal({
   }
 
   async function handleClearIndex() {
-    if (
-      !confirm(
-        "Are you sure you want to clear all indexed games? This cannot be undone.",
-      )
-    ) {
+    if (!confirm(t("indexer.clearConfirmation"))) {
       return;
     }
 
@@ -112,18 +110,18 @@ export function SgfDirectoriesModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Index SGF Files"
+      title={t("indexer.title")}
       className="max-w-2xl"
     >
       <div className="space-y-6">
         {/* Directories List */}
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-[var(--color-text-secondary)]">
-            SGF Directories
+            {t("indexer.directories.title")}
           </h3>
           {directories.value.length === 0 ? (
             <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
-              No directories configured yet
+              {t("indexer.directories.noDirectories")}
             </p>
           ) : (
             <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -144,7 +142,7 @@ export function SgfDirectoriesModal({
                     size="sm"
                     onClick={() => handleRemoveDirectory(dir)}
                     disabled={isLoading.value}
-                    aria-label="Remove directory"
+                    aria-label={t("indexer.directories.removeLabel")}
                   >
                     ✕
                   </Button>
@@ -157,11 +155,11 @@ export function SgfDirectoriesModal({
         {/* Add Directory */}
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-[var(--color-text-secondary)]">
-            Add New Directory
+            {t("indexer.directories.addNew")}
           </h3>
           <div className="flex gap-2">
             <SearchBox
-              placeholder="/path/to/sgf/files"
+              placeholder={t("indexer.directories.pathPlaceholder")}
               value={newDirectory.value}
               onChange={(e) => {
                 newDirectory.value = e.target.value;
@@ -179,7 +177,7 @@ export function SgfDirectoriesModal({
               onClick={handleAddDirectory}
               disabled={isLoading.value || !newDirectory.value.trim()}
             >
-              Add
+              {t("common.add")}
             </Button>
           </div>
         </div>
@@ -190,20 +188,28 @@ export function SgfDirectoriesModal({
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--color-text-secondary)] font-medium capitalize">
-                  {indexProgress.value.phase}
+                  {t(`indexer.progress.${indexProgress.value.phase}`)}
                 </span>
                 <span className="text-[var(--color-text-secondary)]">
                   {indexProgress.value.filesIndexed > 0 && (
                     <>
-                      {indexProgress.value.filesIndexed} indexed
+                      {t("indexer.progress.filesIndexed", {
+                        count: indexProgress.value.filesIndexed,
+                      })}
                       {indexProgress.value.filesSkipped > 0 &&
-                        `, ${indexProgress.value.filesSkipped} skipped`}
+                        `, ${t("indexer.progress.filesSkipped", {
+                          count: indexProgress.value.filesSkipped,
+                        })}`}
                       {indexProgress.value.filesRemoved > 0 &&
-                        `, ${indexProgress.value.filesRemoved} removed`}
+                        `, ${t("indexer.progress.filesRemoved", {
+                          count: indexProgress.value.filesRemoved,
+                        })}`}
                     </>
                   )}
                   {indexProgress.value.phase === "scanning" &&
-                    `${indexProgress.value.filesScanned} files found`}
+                    t("indexer.progress.filesFound", {
+                      count: indexProgress.value.filesScanned,
+                    })}
                 </span>
               </div>
               {/* Progress bar */}
@@ -243,7 +249,7 @@ export function SgfDirectoriesModal({
             disabled={isLoading.value || isIndexing.value}
             className="flex-1"
           >
-            Close
+            {t("common.close")}
           </Button>
           <Button
             variant="secondary"
@@ -253,7 +259,7 @@ export function SgfDirectoriesModal({
             }
             className="flex-1"
           >
-            Clear Index
+            {t("indexer.clearIndex")}
           </Button>
           <Button
             variant="primary"
@@ -265,7 +271,7 @@ export function SgfDirectoriesModal({
             }
             className="flex-1"
           >
-            {isIndexing.value ? "Indexing..." : "Run Indexer"}
+            {isIndexing.value ? t("indexer.indexing") : t("indexer.runIndexer")}
           </Button>
         </div>
       </div>

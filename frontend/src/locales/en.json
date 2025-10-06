@@ -1,0 +1,102 @@
+{
+  "common": {
+    "title": "SGF Flow",
+    "loading": "Loading...",
+    "close": "Close",
+    "add": "Add",
+    "remove": "Remove",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search games...",
+    "playerName": "Player name",
+    "gameName": "Game name",
+    "year": "Year"
+  },
+  "gameList": {
+    "title": "Games",
+    "loading": "Loading games...",
+    "noGamesFound": "No games found",
+    "displayingLimit": "{{total}} (displaying {{limit}})"
+  },
+  "gameInfo": {
+    "title": "Game Information",
+    "event": "Event",
+    "round": "Round",
+    "date": "Date",
+    "place": "Place",
+    "black": "Black",
+    "blackRank": "Black Rank",
+    "white": "White",
+    "whiteRank": "White Rank",
+    "result": "Result",
+    "komi": "Komi",
+    "rules": "Rules",
+    "time": "Time",
+    "overtime": "Overtime",
+    "gameName": "Game Name",
+    "opening": "Opening",
+    "annotator": "Annotator",
+    "source": "Source",
+    "copyright": "Copyright",
+    "gameComment": "Game Comment"
+  },
+  "controls": {
+    "title": "Controls",
+    "start": "Start",
+    "previous": "Previous move",
+    "next": "Next move",
+    "end": "End",
+    "play": "Play",
+    "pause": "Pause",
+    "speed": "Speed in seconds",
+    "moveCounter": "Move {{current}} / {{total}}",
+    "backFifteen": "-15 moves",
+    "forwardFifteen": "+15 moves"
+  },
+  "navigation": {
+    "backToGames": "Back to Games"
+  },
+  "indexer": {
+    "title": "Index SGF Files",
+    "indexButton": "Index SGFs",
+    "runIndexer": "Run Indexer",
+    "indexing": "Indexing...",
+    "clearIndex": "Clear Index",
+    "clearConfirmation": "Are you sure you want to clear all indexed games? This cannot be undone.",
+    "autoplayAll": "Autoplay All",
+    "directories": {
+      "title": "SGF Directories",
+      "noDirectories": "No directories configured yet",
+      "addNew": "Add New Directory",
+      "pathPlaceholder": "/path/to/sgf/files",
+      "removeLabel": "Remove directory"
+    },
+    "progress": {
+      "scanning": "scanning",
+      "indexing": "indexing",
+      "complete": "complete",
+      "filesIndexed": "{{count}} indexed",
+      "filesSkipped": "{{count}} skipped",
+      "filesRemoved": "{{count}} removed",
+      "filesFound": "{{count}} files found"
+    }
+  },
+  "gamePage": {
+    "loadingGame": "Loading game...",
+    "gameNotFound": "Game not found",
+    "whitePlayer": "White",
+    "blackPlayer": "Black",
+    "captures": "{{count}} captures"
+  },
+  "toast": {
+    "closeLabel": "Close"
+  },
+  "errors": {
+    "loadGamesFailed": "Failed to load games",
+    "loadGameFailed": "Failed to load game",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}

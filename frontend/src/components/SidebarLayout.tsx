@@ -1,11 +1,14 @@
 import type { ReactNode } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { useTranslation } from "react-i18next";
 
 interface SidebarLayoutProps {
   children: ReactNode;
 }
 
 export function SidebarLayout({ children }: SidebarLayoutProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="
@@ -18,7 +21,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
     >
       <div className="p-4 border-b border-[var(--color-border)] flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
-          SGF Flow
+          {t("common.title")}
         </h1>
         <ThemeToggle />
       </div>

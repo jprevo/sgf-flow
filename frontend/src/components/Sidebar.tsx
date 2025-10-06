@@ -1,4 +1,5 @@
 import { signal } from "@preact/signals-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { SearchBox } from "./SearchBox";
@@ -13,30 +14,32 @@ import {
 const isIndexModalOpen = signal(false);
 
 export function Sidebar() {
+  const { t } = useTranslation();
+
   return (
     <SidebarLayout>
       <div className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]">
-          Search
+          {t("search.title")}
         </h2>
         <SearchBox
-          placeholder="Search games..."
+          placeholder={t("search.placeholder")}
           value={searchFilters.value.query}
           onChange={(e) => updateSearchQuery(e.target.value)}
         />
         <div className="space-y-2 pl-1">
           <Checkbox
-            label="Player name"
+            label={t("search.playerName")}
             checked={searchFilters.value.playerName}
             onChange={() => toggleFilter("playerName")}
           />
           <Checkbox
-            label="Game name"
+            label={t("search.gameName")}
             checked={searchFilters.value.gameName}
             onChange={() => toggleFilter("gameName")}
           />
           <Checkbox
-            label="Year"
+            label={t("search.year")}
             checked={searchFilters.value.year}
             onChange={() => toggleFilter("year")}
           />
@@ -49,10 +52,10 @@ export function Sidebar() {
           className="w-full"
           onClick={() => (isIndexModalOpen.value = true)}
         >
-          Index SGFs
+          {t("indexer.indexButton")}
         </Button>
         <Button variant="primary" className="w-full">
-          Autoplay All
+          {t("indexer.autoplayAll")}
         </Button>
       </div>
 

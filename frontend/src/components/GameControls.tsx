@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 
 interface GameControlsProps {
@@ -12,6 +13,7 @@ export function GameControls({
   totalMoves,
   onMoveChange,
 }: GameControlsProps) {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const intervalRef = useRef<number | null>(null);
@@ -90,7 +92,7 @@ export function GameControls({
   return (
     <div className="space-y-4">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]">
-        Controls
+        {t("controls.title")}
       </h2>
 
       <div className="grid grid-cols-6 gap-1">
@@ -99,7 +101,7 @@ export function GameControls({
           size="sm"
           onClick={goToStart}
           disabled={currentMove === 0}
-          title="Start"
+          title={t("controls.start")}
         >
           ⏮
         </Button>
@@ -108,7 +110,7 @@ export function GameControls({
           size="sm"
           onClick={goBackFifteen}
           disabled={currentMove === 0}
-          title="-15 moves"
+          title={t("controls.backFifteen")}
         >
           -15
         </Button>
@@ -117,7 +119,7 @@ export function GameControls({
           size="sm"
           onClick={goToPrevious}
           disabled={currentMove === 0}
-          title="Previous move"
+          title={t("controls.previous")}
         >
           ◀
         </Button>
@@ -126,7 +128,7 @@ export function GameControls({
           size="sm"
           onClick={goToNext}
           disabled={currentMove >= totalMoves}
-          title="Next move"
+          title={t("controls.next")}
         >
           ▶
         </Button>
@@ -135,7 +137,7 @@ export function GameControls({
           size="sm"
           onClick={goForwardFifteen}
           disabled={currentMove >= totalMoves}
-          title="+15 moves"
+          title={t("controls.forwardFifteen")}
         >
           +15
         </Button>
@@ -144,7 +146,7 @@ export function GameControls({
           size="sm"
           onClick={goToEnd}
           disabled={currentMove >= totalMoves}
-          title="End"
+          title={t("controls.end")}
         >
           ⏭
         </Button>
@@ -168,7 +170,7 @@ export function GameControls({
             text-[var(--color-text-primary)]
             focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-green)]
           "
-          title="Speed in seconds"
+          title={t("controls.speed")}
         />
         <Button
           variant="primary"
@@ -176,12 +178,12 @@ export function GameControls({
           onClick={togglePlay}
           className="flex-1"
         >
-          {isPlaying ? "⏸ Pause" : "▶ Play"}
+          {isPlaying ? `⏸ ${t("controls.pause")}` : `▶ ${t("controls.play")}`}
         </Button>
       </div>
 
       <div className="text-center text-sm text-[var(--color-text-secondary)]">
-        Move {currentMove} / {totalMoves}
+        {t("controls.moveCounter", { current: currentMove, total: totalMoves })}
       </div>
     </div>
   );

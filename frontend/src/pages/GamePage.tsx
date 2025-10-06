@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BoundedGoban } from "@sabaki/shudan";
 import { fetchGameById } from "../services/games.service";
 import type { GameDetail } from "../types/game";
@@ -9,6 +10,7 @@ import { GameSidebar } from "../components/GameSidebar";
 import type { Marker } from "@sabaki/shudan/src/Goban";
 
 export function GamePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 1000, height: 1000 });
@@ -105,7 +107,9 @@ export function GamePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full bg-[var(--color-bg-primary)]">
-        <p className="text-[var(--color-text-secondary)]">Loading game...</p>
+        <p className="text-[var(--color-text-secondary)]">
+          {t("gamePage.loadingGame")}
+        </p>
       </div>
     );
   }
@@ -113,13 +117,17 @@ export function GamePage() {
   if (!game) {
     return (
       <div className="flex items-center justify-center h-full bg-[var(--color-bg-primary)]">
-        <p className="text-[var(--color-text-secondary)]">Game not found</p>
+        <p className="text-[var(--color-text-secondary)]">
+          {t("gamePage.gameNotFound")}
+        </p>
       </div>
     );
   }
 
-  const whitePlayer = parsedSgf?.source.data.PW || "White";
-  const blackPlayer = parsedSgf?.source.data.PB || "Black";
+  const whitePlayer =
+    parsedSgf?.source.data.PW?.[0] || t("gamePage.whitePlayer");
+  const blackPlayer =
+    parsedSgf?.source.data.PB?.[0] || t("gamePage.blackPlayer");
 
   return (
     <>
@@ -144,7 +152,8 @@ export function GamePage() {
           >
             {whitePlayer}
             <div className="text-sm font-normal ms-1">
-              White • {whiteCaptures} captures
+              {t("gamePage.whitePlayer")} •{" "}
+              {t("gamePage.captures", { count: whiteCaptures })}
             </div>
           </div>
         </div>
@@ -165,7 +174,8 @@ export function GamePage() {
           >
             {blackPlayer}
             <div className="text-sm font-normal ms-1">
-              Black • {blackCaptures} captures
+              {t("gamePage.blackPlayer")} •{" "}
+              {t("gamePage.captures", { count: blackCaptures })}
             </div>
           </div>
         </div>

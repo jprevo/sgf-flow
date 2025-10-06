@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 import { GameControls } from "./GameControls";
 import { GameInfo } from "./GameInfo";
@@ -17,6 +18,7 @@ export function GameSidebar({
   onMoveChange,
   gameData,
 }: GameSidebarProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -27,7 +29,7 @@ export function GameSidebar({
         onClick={() => navigate("/")}
         className="w-full justify-start"
       >
-        ← Back to Games
+        ← {t("navigation.backToGames")}
       </Button>
 
       <GameControls

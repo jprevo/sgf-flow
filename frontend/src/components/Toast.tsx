@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { toasts, removeToast, type Toast } from "../services/toast.service";
 
 const toastTypeClasses = {
@@ -7,6 +8,8 @@ const toastTypeClasses = {
 };
 
 function ToastItem({ toast }: { toast: Toast }) {
+  const { t } = useTranslation();
+
   return (
     <div
       className={`
@@ -21,7 +24,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       <button
         onClick={() => removeToast(toast.id)}
         className="text-white/80 hover:text-white transition-colors"
-        aria-label="Close"
+        aria-label={t("toast.closeLabel")}
       >
         ✕
       </button>

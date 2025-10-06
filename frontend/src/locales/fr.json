@@ -1,0 +1,102 @@
+{
+  "common": {
+    "title": "SGF Flow",
+    "loading": "Chargement...",
+    "close": "Fermer",
+    "add": "Ajouter",
+    "remove": "Supprimer",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher des parties...",
+    "playerName": "Nom du joueur",
+    "gameName": "Nom de la partie",
+    "year": "Année"
+  },
+  "gameList": {
+    "title": "Parties",
+    "loading": "Chargement des parties...",
+    "noGamesFound": "Aucune partie trouvée",
+    "displayingLimit": "{{total}} (affichage de {{limit}})"
+  },
+  "gameInfo": {
+    "title": "Informations de la partie",
+    "event": "Événement",
+    "round": "Ronde",
+    "date": "Date",
+    "place": "Lieu",
+    "black": "Noir",
+    "blackRank": "Rang Noir",
+    "white": "Blanc",
+    "whiteRank": "Rang Blanc",
+    "result": "Résultat",
+    "komi": "Komi",
+    "rules": "Règles",
+    "time": "Temps",
+    "overtime": "Prolongation",
+    "gameName": "Nom de la partie",
+    "opening": "Ouverture",
+    "annotator": "Annotateur",
+    "source": "Source",
+    "copyright": "Copyright",
+    "gameComment": "Commentaire de la partie"
+  },
+  "controls": {
+    "title": "Contrôles",
+    "start": "Début",
+    "previous": "Coup précédent",
+    "next": "Coup suivant",
+    "end": "Fin",
+    "play": "Lecture",
+    "pause": "Pause",
+    "speed": "Vitesse en secondes",
+    "moveCounter": "Coup {{current}} / {{total}}",
+    "backFifteen": "-15 coups",
+    "forwardFifteen": "+15 coups"
+  },
+  "navigation": {
+    "backToGames": "Retour aux parties"
+  },
+  "indexer": {
+    "title": "Indexer les fichiers SGF",
+    "indexButton": "Indexer les SGF",
+    "runIndexer": "Lancer l'indexation",
+    "indexing": "Indexation en cours...",
+    "clearIndex": "Vider l'index",
+    "clearConfirmation": "Êtes-vous sûr de vouloir vider toutes les parties indexées ? Cette action est irréversible.",
+    "autoplayAll": "Tout lire automatiquement",
+    "directories": {
+      "title": "Répertoires SGF",
+      "noDirectories": "Aucun répertoire configuré pour le moment",
+      "addNew": "Ajouter un nouveau répertoire",
+      "pathPlaceholder": "/chemin/vers/fichiers/sgf",
+      "removeLabel": "Supprimer le répertoire"
+    },
+    "progress": {
+      "scanning": "analyse",
+      "indexing": "indexation",
+      "complete": "terminé",
+      "filesIndexed": "{{count}} indexés",
+      "filesSkipped": "{{count}} ignorés",
+      "filesRemoved": "{{count}} supprimés",
+      "filesFound": "{{count}} fichiers trouvés"
+    }
+  },
+  "gamePage": {
+    "loadingGame": "Chargement de la partie...",
+    "gameNotFound": "Partie introuvable",
+    "whitePlayer": "Blanc",
+    "blackPlayer": "Noir",
+    "captures": "{{count}} captures"
+  },
+  "toast": {
+    "closeLabel": "Fermer"
+  },
+  "errors": {
+    "loadGamesFailed": "Échec du chargement des parties",
+    "loadGameFailed": "Échec du chargement de la partie",
+    "unexpectedError": "Une erreur inattendue s'est produite"
+  }
+}

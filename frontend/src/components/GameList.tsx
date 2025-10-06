@@ -2,6 +2,7 @@ import { List, type RowComponentProps } from "react-window";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignalEffect } from "@preact/signals-react/runtime";
+import { useTranslation } from "react-i18next";
 import type { Game } from "../types/game.ts";
 import { fetchGames } from "../services/games.service";
 import { searchFilters } from "../stores/searchStore";
@@ -60,6 +61,7 @@ function GameRow({
 }
 
 export function GameList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [games, setGames] = useState<Game[]>([]);
   const [total, setTotal] = useState(0);
@@ -98,7 +100,10 @@ export function GameList() {
 
   const displayCount =
     total > limit
-      ? `${total.toLocaleString()} (displaying ${limit})`
+      ? t("gameList.displayingLimit", {
+          total: total.toLocaleString(),
+          limit: limit.toLocaleString(),
+        })
       : total.toLocaleString();
 
   return (
@@ -108,19 +113,19 @@ export function GameList() {
         <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
           <div className="px-4 py-3 border-b border-[var(--color-border)]">
             <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
-              Games: {isLoading ? "Loading..." : displayCount}
+              {t("gameList.title")}: {isLoading ? t("common.loading") : displayCount}
             </h2>
           </div>
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-[var(--color-text-secondary)]">
-                Loading games...
+                {t("gameList.loading")}
               </p>
             </div>
           ) : games.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-[var(--color-text-secondary)]">
-                No games found
+                {t("gameList.noGamesFound")}
               </p>
             </div>
           ) : (
