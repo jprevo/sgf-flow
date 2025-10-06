@@ -1,5 +1,6 @@
 import { Sidebar } from "./components/Sidebar";
 import { GameList } from "./components/GameList";
+import { ToastContainer } from "./components/Toast";
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <div className="flex-1 h-full overflow-hidden">
         <GameList />
       </div>
+      <ToastContainer />
     </div>
   );
 }

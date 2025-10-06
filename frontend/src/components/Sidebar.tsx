@@ -3,7 +3,7 @@ import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { SearchBox } from "./SearchBox";
 import { ThemeToggle } from "./ThemeToggle";
-import { Modal } from "./Modal";
+import { SgfDirectoriesModal } from "./SgfDirectoriesModal";
 import { searchFilters, updateSearchQuery, toggleFilter } from "../stores/searchStore";
 
 const isIndexModalOpen = signal(false);
@@ -73,15 +73,10 @@ export function Sidebar() {
         </div>
       </div>
 
-      <Modal
+      <SgfDirectoriesModal
         isOpen={isIndexModalOpen.value}
         onClose={() => (isIndexModalOpen.value = false)}
-        title="Index SGF Files"
-      >
-        <p className="text-[var(--color-text-secondary)]">
-          Coming soon...
-        </p>
-      </Modal>
+      />
     </div>
   );
 }
