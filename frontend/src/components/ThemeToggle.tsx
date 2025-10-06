@@ -8,9 +8,9 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       className="
         p-2 rounded-lg
-        bg-[var(--color-bg-tertiary)] dark:bg-[var(--color-dark-bg-tertiary)]
-        hover:bg-[var(--color-accent-brown)] dark:hover:bg-[var(--color-dark-accent-brown)]
-        text-[var(--color-text-primary)] dark:text-[var(--color-dark-text-primary)]
+        bg-[var(--color-bg-tertiary)]
+        hover:bg-[var(--color-accent-brown)]
+        text-[var(--color-text-primary)]
         transition-all duration-200
         shadow-sm hover:shadow-md
       "

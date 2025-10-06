@@ -13,13 +13,13 @@ export function Sidebar() {
     <div
       className="
         w-80 h-full flex flex-col
-        bg-[var(--color-bg-secondary)] dark:bg-[var(--color-dark-bg-secondary)]
-        border-r border-[var(--color-border)] dark:border-[var(--color-dark-border)]
+        bg-[var(--color-bg-secondary)]
+        border-r border-[var(--color-border)]
         shadow-lg
       "
     >
-      <div className="p-4 border-b border-[var(--color-border)] dark:border-[var(--color-dark-border)] flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)] dark:text-[var(--color-dark-text-primary)]">
+      <div className="p-4 border-b border-[var(--color-border)] flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
           SGF Flow
         </h1>
         <ThemeToggle />
@@ -27,7 +27,7 @@ export function Sidebar() {
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-secondary)] dark:text-[var(--color-dark-text-secondary)]">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]">
             Search
           </h2>
           <SearchBox
@@ -78,7 +78,7 @@ export function Sidebar() {
         onClose={() => (isIndexModalOpen.value = false)}
         title="Index SGF Files"
       >
-        <p className="text-[var(--color-text-secondary)] dark:text-[var(--color-dark-text-secondary)]">
+        <p className="text-[var(--color-text-secondary)]">
           Coming soon...
         </p>
       </Modal>

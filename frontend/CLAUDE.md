@@ -85,9 +85,11 @@ The `Game` model stores SGF game metadata:
 - **Color Scheme**: Peaceful pastel brown and green tones
   - Light theme: Warm beige/brown backgrounds (`#f5f1ea`) with soft green accents (`#a8c8a0`)
   - Dark theme: Deep brown backgrounds (`#2a2520`) with muted green accents (`#7a9c72`)
-- **Theme System**: Uses Tailwind CSS v4 custom properties with localStorage persistence
-  - Theme toggle in sidebar header
-  - Automatic theme application via `data-theme` attribute on `<html>`
+- **Theme System**: Uses CSS custom properties (CSS variables) with localStorage persistence
+  - Theme toggle in sidebar header with sun/moon icons
+  - Automatic theme application via `data-theme` attribute on `<html>` element
+  - CSS switches variable values based on `[data-theme="dark"]` selector
+  - Components use CSS variables directly (no Tailwind `dark:` variants needed)
 - **Component Library**:
   - Button (primary, secondary, ghost variants)
   - Checkbox with label

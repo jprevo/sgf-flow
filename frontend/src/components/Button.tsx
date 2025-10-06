@@ -10,11 +10,11 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[var(--color-accent-green)] hover:bg-[var(--color-accent-green-hover)] text-white dark:bg-[var(--color-dark-accent-green)] dark:hover:bg-[var(--color-dark-accent-green-hover)]",
+    "bg-[var(--color-accent-green)] hover:bg-[var(--color-accent-green-hover)] text-white",
   secondary:
-    "bg-[var(--color-accent-brown)] hover:opacity-90 text-white dark:bg-[var(--color-dark-accent-brown)]",
+    "bg-[var(--color-accent-brown)] hover:opacity-90 text-white",
   ghost:
-    "bg-transparent hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)] dark:hover:bg-[var(--color-dark-bg-tertiary)] dark:text-[var(--color-dark-text-primary)]",
+    "bg-transparent hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

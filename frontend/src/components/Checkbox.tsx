@@ -21,10 +21,10 @@ export function Checkbox({
         id={checkboxId}
         className="
           w-4 h-4 rounded cursor-pointer
-          bg-[var(--color-input-bg)] dark:bg-[var(--color-dark-input-bg)]
-          border-[var(--color-border)] dark:border-[var(--color-dark-border)]
-          text-[var(--color-accent-green)] dark:text-[var(--color-dark-accent-green)]
-          focus:ring-2 focus:ring-[var(--color-accent-green)] dark:focus:ring-[var(--color-dark-accent-green)]
+          bg-[var(--color-input-bg)]
+          border-[var(--color-border)]
+          text-[var(--color-accent-green)]
+          focus:ring-2 focus:ring-[var(--color-accent-green)]
           transition-colors
         "
         {...props}
@@ -33,8 +33,8 @@ export function Checkbox({
         htmlFor={checkboxId}
         className="
           text-sm cursor-pointer select-none
-          text-[var(--color-text-secondary)] dark:text-[var(--color-dark-text-secondary)]
-          hover:text-[var(--color-text-primary)] dark:hover:text-[var(--color-dark-text-primary)]
+          text-[var(--color-text-secondary)]
+          hover:text-[var(--color-text-primary)]
           transition-colors
         "
       >

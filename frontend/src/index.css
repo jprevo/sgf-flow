@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+:root {
     /* Light theme colors - peaceful pastel brown and green */
     --color-bg-primary: #f5f1ea;
     --color-bg-secondary: #ebe5db;
@@ -13,19 +13,21 @@
     --color-border: #d4cfc4;
     --color-input-bg: #ffffff;
     --color-shadow: rgba(74, 66, 56, 0.1);
+}
 
+[data-theme="dark"] {
     /* Dark theme colors - peaceful dark brown and green */
-    --color-dark-bg-primary: #2a2520;
-    --color-dark-bg-secondary: #3a3530;
-    --color-dark-bg-tertiary: #4a4338;
-    --color-dark-text-primary: #e8e4dd;
-    --color-dark-text-secondary: #c8c0b5;
-    --color-dark-accent-green: #7a9c72;
-    --color-dark-accent-green-hover: #8fb187;
-    --color-dark-accent-brown: #a88870;
-    --color-dark-border: #564e44;
-    --color-dark-input-bg: #3a3530;
-    --color-dark-shadow: rgba(0, 0, 0, 0.3);
+    --color-bg-primary: #2a2520;
+    --color-bg-secondary: #3a3530;
+    --color-bg-tertiary: #4a4338;
+    --color-text-primary: #e8e4dd;
+    --color-text-secondary: #c8c0b5;
+    --color-accent-green: #7a9c72;
+    --color-accent-green-hover: #8fb187;
+    --color-accent-brown: #a88870;
+    --color-border: #564e44;
+    --color-input-bg: #3a3530;
+    --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
 @layer base {

@@ -40,16 +40,16 @@ export function Modal({
       <div
         className={`
           relative z-10 w-full max-w-md mx-4 rounded-xl
-          bg-[var(--color-bg-primary)] dark:bg-[var(--color-dark-bg-primary)]
-          border border-[var(--color-border)] dark:border-[var(--color-dark-border)]
+          bg-[var(--color-bg-primary)]
+          border border-[var(--color-border)]
           shadow-2xl
           ${className}
         `}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="px-6 py-4 border-b border-[var(--color-border)] dark:border-[var(--color-dark-border)]">
-            <h2 className="text-xl font-semibold text-[var(--color-text-primary)] dark:text-[var(--color-dark-text-primary)]">
+          <div className="px-6 py-4 border-b border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               {title}
             </h2>
           </div>
