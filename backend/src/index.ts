@@ -6,6 +6,7 @@ import sgfIndexerController from "./controllers/sgf-indexer.controller";
 import gamesController from "./controllers/games.controller";
 import packageJson from "./../package.json";
 import path from "path";
+import urlOpener from "./services/url-opener.service";
 
 const app = express();
 
@@ -41,11 +42,15 @@ app.use("/api/sgf-indexer", sgfIndexerController);
 app.use("/api/games", gamesController);
 
 // Start server
-const PORT = config.server.port || 3000;
+const PORT = config.server.port || 3012;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${config.server.environment}`);
+
+  //if (config.server.environment !== "development") {
+  urlOpener.open("http://localhost:" + PORT);
+  //}
 });
 
 // Graceful shutdown

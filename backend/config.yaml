@@ -1,9 +1,9 @@
 server:
-  port: 3000
+  port: 3012
   environment: development
 database:
   url: file:./dev.db
 logging:
   level: info
   format: json
-sgfDirectories: []
+sgfDirectories: [ ]
