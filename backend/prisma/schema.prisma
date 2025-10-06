@@ -18,6 +18,8 @@ model Game {
   komi       String
   white      String
   black      String
+  whiteRank  String
+  blackRank  String
   whiteWins  Boolean
   blackWins  Boolean
   result     String

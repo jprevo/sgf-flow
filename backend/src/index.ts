@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { loadConfig } from "./utils/config";
 import { prisma } from "./utils/database";
 import sgfDirectoryController from "./controllers/sgf-directory.controller";
+import sgfIndexerController from "./controllers/sgf-indexer.controller";
 import packageJson from "./../package.json";
 
 const app = express();
@@ -23,6 +24,7 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 app.use("/api/sgf-directories", sgfDirectoryController);
+app.use("/api/sgf-indexer", sgfIndexerController);
 
 // Start server
 const PORT = config.server.port || 3000;
