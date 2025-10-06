@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 
@@ -54,7 +54,8 @@ export function GameControls({
   const goToPrevious = () => onMoveChange(Math.max(0, currentMove - 1));
   const goBackFifteen = () => animateJump(Math.max(0, currentMove - 15));
   const goToNext = () => onMoveChange(Math.min(totalMoves, currentMove + 1));
-  const goForwardFifteen = () => animateJump(Math.min(totalMoves, currentMove + 15));
+  const goForwardFifteen = () =>
+    animateJump(Math.min(totalMoves, currentMove + 15));
   const goToEnd = () => onMoveChange(totalMoves);
 
   const togglePlay = () => {
@@ -64,13 +65,11 @@ export function GameControls({
   useEffect(() => {
     if (isPlaying) {
       intervalRef.current = window.setInterval(() => {
-        onMoveChange((prev) => {
-          if (prev >= totalMoves) {
-            setIsPlaying(false);
-            return prev;
-          }
-          return prev + 1;
-        });
+        if (currentMove >= totalMoves) {
+          setIsPlaying(false);
+        } else {
+          onMoveChange(currentMove + 1);
+        }
       }, playbackSpeed * 1000);
     } else {
       if (intervalRef.current !== null) {
@@ -87,7 +86,7 @@ export function GameControls({
         clearInterval(animationRef.current);
       }
     };
-  }, [isPlaying, playbackSpeed, totalMoves, onMoveChange]);
+  }, [isPlaying, playbackSpeed, totalMoves, currentMove, onMoveChange]);
 
   return (
     <div className="space-y-4">
