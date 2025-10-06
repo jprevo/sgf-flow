@@ -4,7 +4,9 @@ import { BoundedGoban } from "@sabaki/shudan";
 import { fetchGameById } from "../services/games.service";
 import type { GameDetail } from "../types/game";
 import { MoveType, type ParsedSgf, SgfParser } from "../services/sgf-parser.service.ts";
-import GoBoard, { type Sign } from "@sabaki/go-board";
+import GoBoard, { type Sign, type Vertex } from "@sabaki/go-board";
+import { GameSidebar } from "../components/GameSidebar";
+import type { Marker } from "@sabaki/shudan/src/Goban";
 
 export function GamePage() {
   const { id } = useParams<{ id: string }>();
@@ -14,23 +16,38 @@ export function GamePage() {
   const [loading, setLoading] = useState(true);
   const [parsedSgf, setParsedSgf] = useState<ParsedSgf | null>(null);
   const [signMap, setSignMap] = useState<Sign[][]>([]);
+  const [markerMap, setMarkerMap] = useState<Marker[][]>([]);
+  const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
 
   useEffect(() => {
     if (parsedSgf) {
       let board = GoBoard.fromDimensions(parsedSgf.size);
+      let lastVertex: Vertex | null = null;
 
-      for (const move of parsedSgf.moves) {
+      for (let i = 0; i < currentMoveIndex; i++) {
+        const move = parsedSgf.moves[i];
         if (move.color === MoveType.Remove) {
           board.set(move.vertex(), 0);
         } else {
           let sign: Sign = move.color === MoveType.White ? -1 : 1;
-          board = board.makeMove(sign, move.vertex());
+          const vertex = move.vertex();
+          board = board.makeMove(sign, vertex);
+          lastVertex = vertex;
         }
       }
 
       setSignMap(board.signMap);
+
+      const markers: Marker[][] = [];
+
+      if (lastVertex) {
+        markers[lastVertex[1]] = [];
+        markers[lastVertex[1]][lastVertex[0]] = { type: "circle" };
+      }
+
+      setMarkerMap(markers);
     }
-  }, [parsedSgf]);
+  }, [parsedSgf, currentMoveIndex]);
 
   useEffect(() => {
     if (game) {
@@ -95,17 +112,23 @@ export function GamePage() {
   }
 
   return (
-    <div
-      ref={wrapperRef}
-      className="flex items-center justify-center h-full bg-[var(--color-bg-primary)]"
-    >
-      {/*
-       // @ts-ignore */}
-      <BoundedGoban
-        maxWidth={dimensions.width}
-        maxHeight={dimensions.height}
-        signMap={signMap}
+    <>
+      <GameSidebar
+        currentMove={currentMoveIndex}
+        totalMoves={parsedSgf?.moves.length || 0}
+        onMoveChange={setCurrentMoveIndex}
+        gameData={parsedSgf?.source.data || {}}
       />
-    </div>
+      <div ref={wrapperRef} className="flex-1 flex items-center justify-center">
+        {/*
+         // @ts-ignore */}
+        <BoundedGoban
+          maxWidth={dimensions.width}
+          maxHeight={dimensions.height}
+          signMap={signMap}
+          markerMap={markerMap}
+        />
+      </div>
+    </>
   );
 }

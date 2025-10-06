@@ -1,9 +1,11 @@
 import { List, type RowComponentProps } from "react-window";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSignalEffect } from "@preact/signals-react/runtime";
 import type { Game } from "../types/game.ts";
 import { fetchGames } from "../services/games.service";
 import { searchFilters } from "../stores/searchStore";
+import { Sidebar } from "./Sidebar.tsx";
 
 function GameRow({
   index,
@@ -11,7 +13,9 @@ function GameRow({
   data,
 }: RowComponentProps<{
   data: Game[];
+  navigate: (path: string) => void;
 }>) {
+  const navigate = useNavigate();
   const game = data[index];
 
   return (
@@ -23,6 +27,7 @@ function GameRow({
         hover:bg-[var(--color-bg-tertiary)]
         transition-colors cursor-pointer
       "
+      onClick={() => navigate(`/game/${game.id}`)}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
@@ -55,6 +60,7 @@ function GameRow({
 }
 
 export function GameList() {
+  const navigate = useNavigate();
   const [games, setGames] = useState<Game[]>([]);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(1000);
@@ -96,28 +102,37 @@ export function GameList() {
       : total.toLocaleString();
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
-      <div className="px-4 py-3 border-b border-[var(--color-border)]">
-        <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
-          Games: {isLoading ? "Loading..." : displayCount}
-        </h2>
+    <>
+      <Sidebar />
+      <div className="flex-1 h-full overflow-hidden">
+        <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
+          <div className="px-4 py-3 border-b border-[var(--color-border)]">
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+              Games: {isLoading ? "Loading..." : displayCount}
+            </h2>
+          </div>
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-[var(--color-text-secondary)]">
+                Loading games...
+              </p>
+            </div>
+          ) : games.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-[var(--color-text-secondary)]">
+                No games found
+              </p>
+            </div>
+          ) : (
+            <List
+              rowCount={games.length}
+              rowHeight={64}
+              rowProps={{ data: games, navigate }}
+              rowComponent={GameRow}
+            />
+          )}
+        </div>
       </div>
-      {isLoading ? (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-[var(--color-text-secondary)]">Loading games...</p>
-        </div>
-      ) : games.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-[var(--color-text-secondary)]">No games found</p>
-        </div>
-      ) : (
-        <List
-          rowCount={games.length}
-          rowHeight={64}
-          rowProps={{ data: games }}
-          rowComponent={GameRow}
-        />
-      )}
-    </div>
+    </>
   );
 }

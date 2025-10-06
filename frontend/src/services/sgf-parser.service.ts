@@ -41,6 +41,7 @@ export enum SymbolKind {
 export interface ParsedSgf {
   size: number;
   moves: Move[];
+  source: any;
 }
 
 const SymbolMapping: SymbolMappingType = {
@@ -66,6 +67,7 @@ export class SgfParser {
     return {
       size: parseInt(size, 10),
       moves,
+      source: entry,
     };
   }
 
