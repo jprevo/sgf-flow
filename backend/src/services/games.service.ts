@@ -1,5 +1,4 @@
-import { prisma } from "../utils/database";
-import { Prisma } from "@prisma/client";
+import { dbAll, dbGet } from "../utils/database";
 
 export interface GameFilters {
   query?: string;
@@ -27,6 +26,17 @@ export interface GameListResponse {
   limit: number;
 }
 
+interface GameRow {
+  id: string;
+  white: string;
+  black: string;
+  event: string;
+  playedAt: string;
+  result: string;
+  komi: string;
+  round: string;
+}
+
 /**
  * Get games from the database with optional filters and sorting
  * @param filters - Search and filter options
@@ -44,89 +54,82 @@ export async function getGames(
 
   const limit = 1000;
 
-  // Build the WHERE clause based on search query and scope
-  let whereClause: Prisma.GameWhereInput = {};
+  // Build WHERE clause
+  const whereClauses: string[] = [];
+  const params: any[] = [];
 
   if (query && query.trim() !== "") {
-    const searchConditions: Prisma.GameWhereInput[] = [];
+    const searchConditions: string[] = [];
 
     // Player name search (white or black)
     if (searchScope.playerName) {
-      searchConditions.push({
-        OR: [{ white: { contains: query } }, { black: { contains: query } }],
-      });
+      searchConditions.push("white LIKE ?", "black LIKE ?");
+      params.push(`%${query}%`, `%${query}%`);
     }
 
     // Game name search (round + event)
     if (searchScope.gameName) {
-      searchConditions.push({
-        OR: [{ round: { contains: query } }, { event: { contains: query } }],
-      });
+      searchConditions.push("round LIKE ?", "event LIKE ?");
+      params.push(`%${query}%`, `%${query}%`);
     }
 
     // Year search (extract year from playedAt date)
     if (searchScope.year) {
-      // Try to parse as year (4 digits)
       const yearMatch = query.match(/^\d{4}$/);
       if (yearMatch) {
         const year = parseInt(yearMatch[0], 10);
-        const startOfYear = new Date(year, 0, 1);
-        const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
-
-        searchConditions.push({
-          playedAt: {
-            gte: startOfYear,
-            lte: endOfYear,
-          },
-        });
+        searchConditions.push(
+          "strftime('%Y', playedAt) = ?",
+        );
+        params.push(year.toString());
       }
     }
 
-    // Combine all search conditions with OR
     if (searchConditions.length > 0) {
-      whereClause = {
-        OR: searchConditions.flatMap((condition) =>
-          condition.OR ? condition.OR : [condition],
-        ),
-      };
+      whereClauses.push(`(${searchConditions.join(" OR ")})`);
     }
   }
 
-  // Build the ORDER BY clause
-  const orderByClause: Prisma.GameOrderByWithRelationInput = (() => {
-    switch (sortBy) {
-      case "white":
-        return { white: sortOrder };
-      case "black":
-        return { black: sortOrder };
-      case "event":
-        return { event: sortOrder };
-      case "date":
-      default:
-        return { playedAt: sortOrder };
-    }
-  })();
+  const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
+  // Build ORDER BY clause
+  let orderByColumn: string;
+  switch (sortBy) {
+    case "white":
+      orderByColumn = "white";
+      break;
+    case "black":
+      orderByColumn = "black";
+      break;
+    case "event":
+      orderByColumn = "event";
+      break;
+    case "date":
+    default:
+      orderByColumn = "playedAt";
+      break;
+  }
+
+  const orderByClause = `ORDER BY ${orderByColumn} ${sortOrder.toUpperCase()}`;
 
   // Execute queries
-  const [games, total] = await Promise.all([
-    prisma.game.findMany({
-      where: whereClause,
-      orderBy: orderByClause,
-      take: limit,
-      select: {
-        id: true,
-        white: true,
-        black: true,
-        event: true,
-        playedAt: true,
-        result: true,
-        komi: true,
-        round: true,
-      },
-    }),
-    prisma.game.count({
-      where: whereClause,
-    }),
+  const gamesQuery = `
+    SELECT id, white, black, event, playedAt, result, komi, round
+    FROM games
+    ${whereClause}
+    ${orderByClause}
+    LIMIT ?
+  `;
+
+  const countQuery = `
+    SELECT COUNT(*) as count
+    FROM games
+    ${whereClause}
+  `;
+
+  const [games, countResult] = await Promise.all([
+    dbAll<GameRow>(gamesQuery, [...params, limit]),
+    dbGet<{ count: number }>(countQuery, params),
   ]);
 
   // Transform to match frontend interface
@@ -135,7 +138,7 @@ export async function getGames(
     playerWhite: game.white,
     playerBlack: game.black,
     event: game.event,
-    date: game.playedAt.toISOString().split("T")[0], // Format as YYYY-MM-DD
+    date: game.playedAt.split("T")[0], // Format as YYYY-MM-DD
     result: game.result,
     komi: game.komi,
     round: game.round,
@@ -143,7 +146,7 @@ export async function getGames(
 
   return {
     games: transformedGames,
-    total,
+    total: countResult?.count || 0,
     limit,
   };
 }

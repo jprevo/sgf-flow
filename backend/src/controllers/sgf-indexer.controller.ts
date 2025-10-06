@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { SgfIndexerService } from "../services/sgf-indexer.service";
+import { dbGet } from "../utils/database";
 
 const router = Router();
 
@@ -44,20 +45,20 @@ router.get("/index", async (req: Request, res: Response) => {
  */
 router.get("/stats", async (req: Request, res: Response) => {
   try {
-    const { prisma } = await import("../utils/database");
-
-    const totalGames = await prisma.game.count();
-    const gamesWithBlackWins = await prisma.game.count({
-      where: { blackWins: true },
-    });
-    const gamesWithWhiteWins = await prisma.game.count({
-      where: { whiteWins: true },
-    });
+    const totalGames = await dbGet<{ count: number }>(
+      "SELECT COUNT(*) as count FROM games",
+    );
+    const gamesWithBlackWins = await dbGet<{ count: number }>(
+      "SELECT COUNT(*) as count FROM games WHERE blackWins = 1",
+    );
+    const gamesWithWhiteWins = await dbGet<{ count: number }>(
+      "SELECT COUNT(*) as count FROM games WHERE whiteWins = 1",
+    );
 
     res.json({
-      totalGames,
-      gamesWithBlackWins,
-      gamesWithWhiteWins,
+      totalGames: totalGames?.count || 0,
+      gamesWithBlackWins: gamesWithBlackWins?.count || 0,
+      gamesWithWhiteWins: gamesWithWhiteWins?.count || 0,
     });
   } catch (error) {
     res.status(500).json({
@@ -73,13 +74,12 @@ router.get("/stats", async (req: Request, res: Response) => {
  */
 router.delete("/clear", async (req: Request, res: Response) => {
   try {
-    const { prisma } = await import("../utils/database");
-
-    const result = await prisma.game.deleteMany({});
+    const { dbRun } = await import("../utils/database");
+    const result = await dbRun("DELETE FROM games");
 
     res.json({
       message: "Database cleared successfully",
-      deletedCount: result.count,
+      deletedCount: result.changes || 0,
     });
   } catch (error) {
     res.status(500).json({

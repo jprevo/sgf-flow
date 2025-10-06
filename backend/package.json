@@ -4,22 +4,37 @@
   "version": "1.0.0",
   "description": "Backend server for tenuki-database",
   "main": "dist/index.js",
+  "bin": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
+    "build-frontend": "cd ../frontend && npm run build",
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prepackage": "npm run build && npm run build-frontend",
+    "package": "pkg ."
+  },
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "assets": [
+      "config.yaml",
+      "config.development.yaml"
+    ],
+    "targets": [
+      "node22-linux-x64",
+      "node22-macos-x64",
+      "node22-win-x64"
+    ],
+    "outputPath": "packaged"
   },
   "author": "Jonathan Prevost",
   "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^6.16.3",
+    "@yao-pkg/pkg": "^6.7.0",
     "express": "^5.1.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
@@ -30,7 +45,6 @@
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
     "prettier": "3.6.2",
-    "prisma": "^6.16.3",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",

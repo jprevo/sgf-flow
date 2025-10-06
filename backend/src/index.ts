@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { loadConfig } from "./utils/config";
-import { prisma } from "./utils/database";
+import { initializeDatabase, closeDatabase } from "./utils/database";
 import sgfDirectoryController from "./controllers/sgf-directory.controller";
 import sgfIndexerController from "./controllers/sgf-indexer.controller";
 import gamesController from "./controllers/games.controller";
@@ -14,6 +14,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // Load configuration
 const config = loadConfig();
+
+// Initialize database
+initializeDatabase()
+  .then(() => {
+    console.log("Database initialized successfully");
+  })
+  .catch((error) => {
+    console.error("Failed to initialize database:", error);
+    process.exit(1);
+  });
 
 // Routes
 app.get("/", (req: Request, res: Response) => {
@@ -39,13 +49,13 @@ app.listen(PORT, () => {
 // Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("Shutting down gracefully...");
-  await prisma.$disconnect();
+  await closeDatabase();
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
   console.log("Shutting down gracefully...");
-  await prisma.$disconnect();
+  await closeDatabase();
   process.exit(0);
 });
 

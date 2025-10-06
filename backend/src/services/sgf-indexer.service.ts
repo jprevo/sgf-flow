@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { createHash } from "crypto";
-import { prisma } from "../utils/database";
+import { db, dbAll, dbRun } from "../utils/database";
 import { SgfParser } from "./sgf-parser.service";
 import { getSgfDirectories } from "./sgf-directory.service";
 
@@ -108,9 +108,9 @@ export class SgfIndexerService {
       }
 
       // Get all existing game IDs from database
-      const existingGames = await prisma.game.findMany({
-        select: { id: true },
-      });
+      const existingGames = await dbAll<{ id: string }>(
+        "SELECT id FROM games",
+      );
       const existingIds = new Set(existingGames.map((g) => g.id));
 
       // Track which files exist
@@ -155,16 +155,14 @@ export class SgfIndexerService {
           black: metadata.blackPlayer || "",
           whiteRank: metadata.whiteRank || "",
           blackRank: metadata.blackRank || "",
-          whiteWins: metadata.whiteWins,
-          blackWins: metadata.blackWins,
+          whiteWins: metadata.whiteWins ? 1 : 0,
+          blackWins: metadata.blackWins ? 1 : 0,
           result: metadata.result || "",
         });
 
         // Batch insert when we reach batch size
         if (gamesToCreate.length >= this.BATCH_SIZE) {
-          await prisma.game.createMany({
-            data: gamesToCreate,
-          });
+          await this.insertGames(gamesToCreate);
           progress.filesIndexed += gamesToCreate.length;
           gamesToCreate.length = 0;
           progressCallback(progress);
@@ -173,9 +171,7 @@ export class SgfIndexerService {
 
       // Insert remaining games
       if (gamesToCreate.length > 0) {
-        await prisma.game.createMany({
-          data: gamesToCreate,
-        });
+        await this.insertGames(gamesToCreate);
         progress.filesIndexed += gamesToCreate.length;
         progressCallback(progress);
       }
@@ -189,13 +185,15 @@ export class SgfIndexerService {
         .map((g) => g.id);
 
       if (idsToRemove.length > 0) {
-        await prisma.game.deleteMany({
-          where: {
-            id: {
-              in: idsToRemove,
-            },
-          },
-        });
+        // Delete in batches
+        for (let i = 0; i < idsToRemove.length; i += this.BATCH_SIZE) {
+          const batch = idsToRemove.slice(i, i + this.BATCH_SIZE);
+          const placeholders = batch.map(() => "?").join(",");
+          await dbRun(
+            `DELETE FROM games WHERE id IN (${placeholders})`,
+            batch,
+          );
+        }
         progress.filesRemoved = idsToRemove.length;
       }
 
@@ -208,6 +206,51 @@ export class SgfIndexerService {
       progressCallback(progress);
       throw error;
     }
+  }
+
+  /**
+   * Insert multiple games into the database
+   */
+  private static async insertGames(games: any[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.run("BEGIN TRANSACTION");
+
+        const stmt = db.prepare(`
+          INSERT INTO games (id, playedAt, round, event, komi, white, black, whiteRank, blackRank, whiteWins, blackWins, result)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+
+        for (const game of games) {
+          stmt.run(
+            game.id,
+            game.playedAt.toISOString(),
+            game.round,
+            game.event,
+            game.komi,
+            game.white,
+            game.black,
+            game.whiteRank,
+            game.blackRank,
+            game.whiteWins,
+            game.blackWins,
+            game.result,
+          );
+        }
+
+        stmt.finalize((err) => {
+          if (err) {
+            db.run("ROLLBACK");
+            reject(err);
+          } else {
+            db.run("COMMIT", (commitErr) => {
+              if (commitErr) reject(commitErr);
+              else resolve();
+            });
+          }
+        });
+      });
+    });
   }
 
   /**
