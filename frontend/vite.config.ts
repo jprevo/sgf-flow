@@ -1,9 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import commonjs from "vite-plugin-commonjs";
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      "preact/hooks": "react",
+      preact: "react",
+    },
+    extensions: ["*", ".js", ".jsx", ".ts", ".tsx"],
+  },
   plugins: [
     react({
       babel: {
@@ -11,6 +19,7 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
+    commonjs(),
   ],
   build: {
     outDir: "../backend/public",

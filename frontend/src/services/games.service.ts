@@ -1,5 +1,5 @@
 import { httpClient } from "./http.service";
-import type { Game } from "../types/game";
+import type { Game, GameDetail } from "../types/game";
 
 export interface GameListResponse {
   games: Game[];
@@ -52,5 +52,13 @@ export async function fetchGames(
     `/games?${queryParams.toString()}`,
   );
 
+  return response.data;
+}
+
+/**
+ * Fetch a single game by ID with full metadata and SGF content
+ */
+export async function fetchGameById(id: string): Promise<GameDetail> {
+  const response = await httpClient.get<GameDetail>(`/games/${id}`);
   return response.data;
 }

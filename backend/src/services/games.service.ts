@@ -1,4 +1,5 @@
 import { dbAll, dbGet } from "../utils/database";
+import { readFile } from "fs/promises";
 
 export interface GameFilters {
   query?: string;
@@ -35,6 +36,43 @@ interface GameRow {
   result: string;
   komi: string;
   round: string;
+}
+
+interface FullGameRow {
+  id: string;
+  playedAt: string;
+  round: string;
+  event: string;
+  komi: string;
+  white: string;
+  black: string;
+  whiteRank: string;
+  blackRank: string;
+  whiteWins: number;
+  blackWins: number;
+  result: string;
+  filePath: string;
+  viewed: number;
+  createdAt: string;
+}
+
+export interface GameDetailResponse {
+  id: string;
+  playedAt: string;
+  round: string;
+  event: string;
+  komi: string;
+  white: string;
+  black: string;
+  whiteRank: string;
+  blackRank: string;
+  whiteWins: number;
+  blackWins: number;
+  result: string;
+  filePath: string;
+  viewed: boolean;
+  createdAt: string;
+  sgfContent: string;
 }
 
 /**
@@ -160,6 +198,49 @@ export async function getGames(
     games: transformedGames,
     total: countResult?.count || 0,
     limit,
+  };
+}
+
+/**
+ * Get a single game by ID with full metadata and SGF file content
+ * @param id - Game ID
+ * @returns Game details with SGF content
+ */
+export async function getGameById(
+  id: string,
+): Promise<GameDetailResponse | null> {
+  const game = await dbGet<FullGameRow>(
+    `SELECT id, playedAt, round, event, komi, white, black, whiteRank, blackRank,
+            whiteWins, blackWins, result, filePath, viewed, createdAt
+     FROM games
+     WHERE id = ?`,
+    [id],
+  );
+
+  if (!game) {
+    return null;
+  }
+
+  // Read SGF file from disk
+  const sgfContent = await readFile(game.filePath, "utf-8");
+
+  return {
+    id: game.id,
+    playedAt: game.playedAt,
+    round: game.round,
+    event: game.event,
+    komi: game.komi,
+    white: game.white,
+    black: game.black,
+    whiteRank: game.whiteRank,
+    blackRank: game.blackRank,
+    whiteWins: game.whiteWins,
+    blackWins: game.blackWins,
+    result: game.result,
+    filePath: game.filePath,
+    viewed: game.viewed === 1,
+    createdAt: game.createdAt,
+    sgfContent,
   };
 }
 
