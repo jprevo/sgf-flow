@@ -8,10 +8,17 @@ import {
   addSgfDirectory,
   removeSgfDirectory,
 } from "../services/sgf-directories.service";
+import {
+  runIndexer,
+  clearIndex,
+  type IndexProgress,
+} from "../services/sgf-indexer.service";
 
 const directories = signal<string[]>([]);
 const isLoading = signal(false);
 const newDirectory = signal("");
+const isIndexing = signal(false);
+const indexProgress = signal<IndexProgress | null>(null);
 
 interface SgfDirectoriesModalProps {
   isOpen: boolean;
@@ -66,9 +73,39 @@ export function SgfDirectoriesModal({
     }
   }
 
-  function handleRunIndexer() {
-    // TODO: Implement indexer functionality
-    console.log("Run indexer clicked");
+  async function handleRunIndexer() {
+    isIndexing.value = true;
+    indexProgress.value = null;
+
+    try {
+      await runIndexer((progress) => {
+        indexProgress.value = progress;
+      });
+    } catch (error) {
+      // Error already handled by HTTP interceptor or toast
+    } finally {
+      isIndexing.value = false;
+    }
+  }
+
+  async function handleClearIndex() {
+    if (
+      !confirm(
+        "Are you sure you want to clear all indexed games? This cannot be undone.",
+      )
+    ) {
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      await clearIndex();
+      indexProgress.value = null;
+    } catch (error) {
+      // Error already handled by HTTP interceptor
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   return (
@@ -147,23 +184,88 @@ export function SgfDirectoriesModal({
           </div>
         </div>
 
+        {/* Progress Bar */}
+        {indexProgress.value && (
+          <div className="space-y-3 pt-4 border-t border-[var(--color-border)]">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-[var(--color-text-secondary)] font-medium capitalize">
+                  {indexProgress.value.phase}
+                </span>
+                <span className="text-[var(--color-text-secondary)]">
+                  {indexProgress.value.filesIndexed > 0 && (
+                    <>
+                      {indexProgress.value.filesIndexed} indexed
+                      {indexProgress.value.filesSkipped > 0 &&
+                        `, ${indexProgress.value.filesSkipped} skipped`}
+                      {indexProgress.value.filesRemoved > 0 &&
+                        `, ${indexProgress.value.filesRemoved} removed`}
+                    </>
+                  )}
+                  {indexProgress.value.phase === "scanning" &&
+                    `${indexProgress.value.filesScanned} files found`}
+                </span>
+              </div>
+              {/* Progress bar */}
+              <div className="w-full h-2 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[var(--color-accent)] transition-all duration-300 ease-out"
+                  style={{
+                    width:
+                      indexProgress.value.phase === "complete"
+                        ? "100%"
+                        : indexProgress.value.filesScanned > 0
+                          ? `${Math.min(
+                              100,
+                              ((indexProgress.value.filesIndexed +
+                                indexProgress.value.filesSkipped) /
+                                indexProgress.value.filesScanned) *
+                                100,
+                            )}%`
+                          : "0%",
+                  }}
+                />
+              </div>
+              {indexProgress.value.currentFile && (
+                <p className="text-xs text-[var(--color-text-secondary)] truncate">
+                  {indexProgress.value.currentFile}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <div className="flex gap-3 pt-4 border-t border-[var(--color-border)]">
           <Button
             variant="secondary"
             onClick={onClose}
-            disabled={isLoading.value}
+            disabled={isLoading.value || isIndexing.value}
             className="flex-1"
           >
             Close
           </Button>
           <Button
-            variant="primary"
-            onClick={handleRunIndexer}
-            disabled={isLoading.value || directories.value.length === 0}
+            variant="secondary"
+            onClick={handleClearIndex}
+            disabled={
+              isLoading.value || isIndexing.value || directories.value.length === 0
+            }
             className="flex-1"
           >
-            Run Indexer
+            Clear Index
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRunIndexer}
+            disabled={
+              isLoading.value ||
+              isIndexing.value ||
+              directories.value.length === 0
+            }
+            className="flex-1"
+          >
+            {isIndexing.value ? "Indexing..." : "Run Indexer"}
           </Button>
         </div>
       </div>

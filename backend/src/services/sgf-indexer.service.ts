@@ -22,7 +22,7 @@ export interface IndexProgress {
  * Service for indexing SGF files from configured directories
  */
 export class SgfIndexerService {
-  private static readonly BATCH_SIZE = 100;
+  private static readonly BATCH_SIZE = 500;
   private static readonly SGF_EXTENSION = ".sgf";
 
   /**

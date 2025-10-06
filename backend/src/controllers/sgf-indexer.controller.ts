@@ -1,13 +1,13 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { SgfIndexerService } from "../services/sgf-indexer.service";
 
 const router = Router();
 
 /**
- * POST /api/sgf-indexer/index
+ * GET /api/sgf-indexer/index
  * Start indexing SGF files with Server-Sent Events progress updates
  */
-router.post("/index", async (req: Request, res: Response) => {
+router.get("/index", async (req: Request, res: Response) => {
   // Set headers for SSE
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
