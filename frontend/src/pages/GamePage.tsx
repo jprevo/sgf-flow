@@ -18,6 +18,8 @@ export function GamePage() {
   const [signMap, setSignMap] = useState<Sign[][]>([]);
   const [markerMap, setMarkerMap] = useState<Marker[][]>([]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+  const [whiteCaptures, setWhiteCaptures] = useState(0);
+  const [blackCaptures, setBlackCaptures] = useState(0);
 
   useEffect(() => {
     if (parsedSgf) {
@@ -36,6 +38,11 @@ export function GamePage() {
         }
       }
 
+      const whiteCaptured = board.getCaptures(-1);
+      const blackCaptured = board.getCaptures(1);
+
+      setWhiteCaptures(whiteCaptured);
+      setBlackCaptures(blackCaptured);
       setSignMap(board.signMap);
 
       const markers: Marker[][] = [];
@@ -111,6 +118,9 @@ export function GamePage() {
     );
   }
 
+  const whitePlayer = parsedSgf?.source.data.PW || "White";
+  const blackPlayer = parsedSgf?.source.data.PB || "Black";
+
   return (
     <>
       <GameSidebar
@@ -119,7 +129,26 @@ export function GamePage() {
         onMoveChange={setCurrentMoveIndex}
         gameData={parsedSgf?.source.data || {}}
       />
-      <div ref={wrapperRef} className="flex-1 flex items-center justify-center">
+      <div
+        ref={wrapperRef}
+        className="flex-1 flex items-center justify-center relative m-5"
+      >
+        <div className="flex-0 select-none pointer-events-none me-5">
+          <div
+            className="text-6xl font-bold text-[var(--color-text-primary)] opacity-30"
+            style={{
+              writingMode: "vertical-rl",
+              textOrientation: "mixed",
+              transform: "rotate(180deg)",
+            }}
+          >
+            {whitePlayer}
+            <div className="text-sm font-normal ms-1">
+              White • {whiteCaptures} captures
+            </div>
+          </div>
+        </div>
+
         {/*
          // @ts-ignore */}
         <BoundedGoban
@@ -128,6 +157,18 @@ export function GamePage() {
           signMap={signMap}
           markerMap={markerMap}
         />
+
+        <div className="flex-0 select-none pointer-events-none ms-5">
+          <div
+            className="text-6xl font-bold text-[var(--color-text-primary)] opacity-30"
+            style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
+          >
+            {blackPlayer}
+            <div className="text-sm font-normal ms-1">
+              Black • {blackCaptures} captures
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
