@@ -124,10 +124,13 @@ export function GamePage() {
     );
   }
 
-  const whitePlayer =
+  const whitePlayer: string =
     parsedSgf?.source.data.PW?.[0] || t("gamePage.whitePlayer");
-  const blackPlayer =
+  const blackPlayer: string =
     parsedSgf?.source.data.PB?.[0] || t("gamePage.blackPlayer");
+
+  const whiteRank = parsedSgf?.source.data.WR?.[0] ?? "";
+  const blackRank = parsedSgf?.source.data.BR?.[0] ?? "";
 
   return (
     <>
@@ -150,7 +153,7 @@ export function GamePage() {
               transform: "rotate(180deg)",
             }}
           >
-            {whitePlayer}
+            {whitePlayer.trim()} <span className="opacity-50">{whiteRank}</span>
             <div className="text-sm font-normal ms-1">
               {t("gamePage.whitePlayer")} •{" "}
               {t("gamePage.captures", { count: whiteCaptures })}
@@ -172,7 +175,7 @@ export function GamePage() {
             className="text-6xl font-bold text-[var(--color-text-primary)] opacity-30"
             style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
           >
-            {blackPlayer}
+            {blackPlayer.trim()} <span className="opacity-50">{blackRank}</span>
             <div className="text-sm font-normal ms-1">
               {t("gamePage.blackPlayer")} •{" "}
               {t("gamePage.captures", { count: blackCaptures })}
