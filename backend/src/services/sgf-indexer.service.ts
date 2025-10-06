@@ -158,6 +158,7 @@ export class SgfIndexerService {
           whiteWins: metadata.whiteWins ? 1 : 0,
           blackWins: metadata.blackWins ? 1 : 0,
           result: metadata.result || "",
+          filePath: filePath,
         });
 
         // Batch insert when we reach batch size
@@ -217,8 +218,8 @@ export class SgfIndexerService {
         db.run("BEGIN TRANSACTION");
 
         const stmt = db.prepare(`
-          INSERT INTO games (id, playedAt, round, event, komi, white, black, whiteRank, blackRank, whiteWins, blackWins, result)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO games (id, playedAt, round, event, komi, white, black, whiteRank, blackRank, whiteWins, blackWins, result, filePath)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
         for (const game of games) {
@@ -235,6 +236,7 @@ export class SgfIndexerService {
             game.whiteWins,
             game.blackWins,
             game.result,
+            game.filePath,
           );
         }
 

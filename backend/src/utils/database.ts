@@ -41,6 +41,8 @@ export function initializeDatabase(): Promise<void> {
           whiteWins INTEGER NOT NULL,
           blackWins INTEGER NOT NULL,
           result TEXT NOT NULL,
+          filePath TEXT NOT NULL,
+          viewed INTEGER NOT NULL DEFAULT 0,
           createdAt TEXT NOT NULL DEFAULT (datetime('now'))
         )
       `,
