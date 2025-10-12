@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 
@@ -6,17 +6,22 @@ interface GameControlsProps {
   currentMove: number;
   totalMoves: number;
   onMoveChange: (moveIndex: number) => void;
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
+  playbackSpeed: number;
+  setPlaybackSpeed: (speed: number) => void;
 }
 
 export function GameControls({
   currentMove,
   totalMoves,
   onMoveChange,
+  isPlaying,
+  setIsPlaying,
+  playbackSpeed,
+  setPlaybackSpeed,
 }: GameControlsProps) {
   const { t } = useTranslation();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const intervalRef = useRef<number | null>(null);
   const animationRef = useRef<number | null>(null);
 
   const animateJump = (targetMove: number) => {
@@ -63,30 +68,12 @@ export function GameControls({
   };
 
   useEffect(() => {
-    if (isPlaying) {
-      intervalRef.current = window.setInterval(() => {
-        if (currentMove >= totalMoves) {
-          setIsPlaying(false);
-        } else {
-          onMoveChange(currentMove + 1);
-        }
-      }, playbackSpeed * 1000);
-    } else {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
-
     return () => {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-      }
       if (animationRef.current !== null) {
         clearInterval(animationRef.current);
       }
     };
-  }, [isPlaying, playbackSpeed, totalMoves, currentMove, onMoveChange]);
+  }, []);
 
   return (
     <div className="space-y-4">

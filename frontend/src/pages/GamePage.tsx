@@ -22,6 +22,17 @@ export function GamePage() {
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const [whiteCaptures, setWhiteCaptures] = useState(0);
   const [blackCaptures, setBlackCaptures] = useState(0);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const intervalRef = useRef<number | null>(null);
+
+  const updateDimensions = () => {
+    if (wrapperRef.current) {
+      const { width, height } = wrapperRef.current.getBoundingClientRect();
+      setDimensions({ width, height });
+    }
+  };
 
   useEffect(() => {
     if (parsedSgf) {
@@ -59,6 +70,10 @@ export function GamePage() {
   }, [parsedSgf, currentMoveIndex]);
 
   useEffect(() => {
+    updateDimensions();
+  }, [parsedSgf]);
+
+  useEffect(() => {
     if (game) {
       const parsed = SgfParser.load(game.sgfContent);
       setParsedSgf(parsed);
@@ -86,16 +101,6 @@ export function GamePage() {
 
   // Update dimensions on resize
   useEffect(() => {
-    const updateDimensions = () => {
-      if (wrapperRef.current) {
-        const { width, height } = wrapperRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
-      }
-    };
-
-    // Initial size detection
-    updateDimensions();
-
     // Update on window resize
     window.addEventListener("resize", updateDimensions);
 
@@ -103,6 +108,32 @@ export function GamePage() {
       window.removeEventListener("resize", updateDimensions);
     };
   }, []);
+
+  // Handle autoplay
+  useEffect(() => {
+    if (isPlaying && parsedSgf) {
+      intervalRef.current = window.setInterval(() => {
+        setCurrentMoveIndex((current) => {
+          if (current >= (parsedSgf.moves.length || 0)) {
+            setIsPlaying(false);
+            return current;
+          }
+          return current + 1;
+        });
+      }, playbackSpeed * 1000);
+    } else {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isPlaying, playbackSpeed, parsedSgf]);
 
   if (loading) {
     return (
@@ -134,12 +165,58 @@ export function GamePage() {
 
   return (
     <>
-      <GameSidebar
-        currentMove={currentMoveIndex}
-        totalMoves={parsedSgf?.moves.length || 0}
-        onMoveChange={setCurrentMoveIndex}
-        gameData={parsedSgf?.source.data || {}}
-      />
+      {!isSidebarCollapsed && (
+        <GameSidebar
+          currentMove={currentMoveIndex}
+          totalMoves={parsedSgf?.moves.length || 0}
+          onMoveChange={setCurrentMoveIndex}
+          gameData={parsedSgf?.source.data || {}}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          playbackSpeed={playbackSpeed}
+          setPlaybackSpeed={setPlaybackSpeed}
+        />
+      )}
+
+      {/* Toggle button when sidebar is collapsed */}
+      {isSidebarCollapsed && (
+        <button
+          onClick={() => setIsSidebarCollapsed(false)}
+          className="
+            fixed top-4 left-4 z-50
+            w-10 h-10
+            bg-[var(--color-bg-secondary)]
+            border border-[var(--color-border)]
+            rounded-lg
+            flex items-center justify-center
+            shadow-lg
+            hover:bg-[var(--color-bg-primary)]
+            transition-all duration-300 ease-in-out
+            animate-[fadeIn_0.3s_ease-in-out]
+          "
+          style={{
+            animation: 'fadeIn 0.3s ease-in-out'
+          }}
+          aria-label="Open sidebar"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-[var(--color-text-primary)]"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      )}
+
       <div
         ref={wrapperRef}
         className="flex-1 flex items-center justify-center relative m-5"

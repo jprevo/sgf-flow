@@ -17,6 +17,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         bg-[var(--color-bg-secondary)]
         border-r border-[var(--color-border)]
         shadow-lg
+        transition-transform duration-300 ease-in-out
       "
     >
       <div className="p-4 border-b border-[var(--color-border)] flex items-center justify-between">
